@@ -1,0 +1,7 @@
+[Plugin]
+Module=clipmgr.so
+Name=Clipboard Manager
+Description=Clipboard Manager for Budgie
+Authors=Prateek SU
+Copyright=© 2020 Prateek SU
+Icon=clipboard-outline-symbolic
