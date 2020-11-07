@@ -1,5 +1,5 @@
-# Vala template applet
-This is an empty applet template.
+# Budgie Clipboard Manager
+This is an clipboard manager applet made to store and manage clipboard content in Budgie desktop. Written in Vala.
 
 # Install
 Run from the repo's folder:
