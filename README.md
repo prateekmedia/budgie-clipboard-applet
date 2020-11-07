@@ -1,1 +1,0 @@
-# budgie-clipboard-applet
