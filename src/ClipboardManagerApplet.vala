@@ -55,7 +55,6 @@ namespace TemplateApplet {
 
         public TemplatePopover(Gtk.EventBox indicatorBox) {
             GLib.Object(relative_to: indicatorBox);
-            indicatorBox = indicatorBox;
             /* set icon */
             indicatorIcon = new Gtk.Image.from_icon_name(
                 "clipboard-text-outline-symbolic", Gtk.IconSize.MENU
