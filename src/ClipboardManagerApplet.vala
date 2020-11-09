@@ -11,23 +11,61 @@ using Gtk;
  * (at your option) any later version.
  */
 
-namespace SupportingFunctions {
-  /*
- * Here we keep the (possibly) shared stuff, or general functions, to
- * keep the main code clean and readable
- */
+ public class ClipboardManager : Object {
+    /*
+  * Here we keep the (possibly) shared stuff, or general functions, to
+  * keep the main code clean and readable
+  */
+  private static Gtk.Clipboard monitor_clipboard;
+  private static Gtk.Clipboard monitor_clipboard_selection;
+  public static ListBox mainContent;
+  public static string text;
+  //  int HISTORY_LENGTH = 10;
+  //  string ? [] history;
+  //  string ? [] rows;
+  //  bool row_activated_flag = false;
+
+  public static bool attach_monitor_clipboard() {
+      mainContent = ClipboardManagerApplet.ClipboardManagerPopover.mainContent;
+      monitor_clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
+      monitor_clipboard_selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
+      monitor_clipboard.owner_change.connect ((ev) => {
+        //add text        
+        ClipboardManagerApplet.ClipboardManagerPopover.addRow(0);
+      });
+      monitor_clipboard_selection.owner_change.connect ((ev) => {
+        //add text
+        ClipboardManagerApplet.ClipboardManagerPopover.addRow(1);
+      });
+      print("text test");
+      return true;
+  }
+
+  public static string get_selected_text () {
+      var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
+      string text = clipboard.wait_for_text ();
+      return text;
+  }
+  
+  public static string get_clipboard_text () {
+      var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
+      string text = clipboard.wait_for_text ();
+      return text;
+  }
+  public static void set_text (string text) {
+      var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
+      clipboard.set_text (text, text.length);
+  }
 }
 
 namespace ClipboardManagerApplet {
 
   public class ClipboardManagerSettings: Gtk.Grid {
     /* Budgie Settings -section */
-    GLib.Settings ? settings = null;
+    //  GLib.Settings ? settings = null
 
     public ClipboardManagerSettings(GLib.Settings ? settings) {
-      /*
-	 * Gtk stuff, widgets etc. here
-	 */
+	      // Gtk stuff, widgets etc. here
     }
   }
 
@@ -41,8 +79,9 @@ namespace ClipboardManagerApplet {
   public class ClipboardManagerPopover: Budgie.Popover {
     private EventBox indicatorBox;
     private Image indicatorIcon;
-    public Clipboard clipboard;
-    public ListBox mainContent = new ListBox();
+    public static Clipboard clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD);
+    public static ListBox mainContent = new ListBox();
+    public static string text;
     /* process stuff */
     /* GUI stuff */
     /* misc stuff */
@@ -59,27 +98,29 @@ namespace ClipboardManagerApplet {
 
       /* box */
       add(mainContent);
-      Timeout.add_seconds_full(Priority.LOW, 1, update_clipboard);
+      string text = "Clipboard is Currently EMPTY!";
+      Button clipMgr = new Button();
+      Label clipMgrLabel = new Label(null);
+      clipMgrLabel.set_text(text);
+      clipMgrLabel.set_max_width_chars(30);
+      clipMgr.add(clipMgrLabel);
+      mainContent.add(clipMgr);
     }
 
-    public bool update_clipboard() {
-      string text = "";
-      clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD);
-      clipboard.owner_change.connect((ev) =>{
-        text = clipboard.wait_for_text();
-        text = text.substring(0, 30);
-        Button clipMgr = new Button();
-        Label clipMgrLabel = new Label(null);
-        if (text[0] == '\0' || text == null) {
-          clipMgrLabel.set_text(_("Clipboard Current Empty, Copy Something to see the magic!"));
-        } else {
-          clipMgrLabel.set_text(_(text));
-          clipMgrLabel.set_max_width_chars(30);
-        }
-        clipMgr.add(clipMgrLabel);
-        mainContent.add(clipMgr);
-      });
-      return true;
+    public static void addRow(int ttype){
+      if (ttype==0){
+        text = ClipboardManager.get_clipboard_text();
+      } else if (ttype ==1 ){
+        text = ClipboardManager.get_selected_text();
+      } else {
+        text = "";
+      }
+      text = text.substring (0, 30);
+      Button clipMgr = new Button();
+      Label clipMgrLabel = new Label(text);
+      clipMgrLabel.set_max_width_chars(30);
+      clipMgr.add(clipMgrLabel);
+      mainContent.add(clipMgr);
     }
 
   }
@@ -88,16 +129,7 @@ namespace ClipboardManagerApplet {
     private Gtk.EventBox indicatorBox;
     private ClipboardManagerPopover popover = null;
     private unowned Budgie.PopoverManager ? manager = null;
-    public Clipboard clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD);
-    public ListBox mainContent = new ListBox();
-    int HISTORY_LENGTH = 10;
-    string ? [] history;
-    string ? [] rows;
-    bool row_activated_flag = false;
-    public string uuid {
-      public set;
-      public get;
-    }
+    public string uuid { public set; public get; }
     /* specifically to the settings section */
     public override bool supports_settings() {
       return true;
@@ -126,11 +158,9 @@ namespace ClipboardManagerApplet {
       });
       popover.get_child().show_all();
       show_all();
+      Timeout.add_seconds_full(Priority.LOW, 1, ClipboardManager.attach_monitor_clipboard);
+      Timeout.add( 1, ClipboardManager.attach_monitor_clipboard);
     }
-    // protected bool insert_row() {
-    // }
-    // protected bool update_ui() {
-    // }
     public override void update_popovers(Budgie.PopoverManager ? manager) {
       this.manager = manager;
       manager.register_popover(indicatorBox, popover);
