@@ -18,15 +18,12 @@ using Gtk;
   */
   private static Gtk.Clipboard monitor_clipboard;
   private static Gtk.Clipboard monitor_clipboard_selection;
-  public static ListBox mainContent;
-  public static string text;
   //  int HISTORY_LENGTH = 10;
   //  string ? [] history;
   //  string ? [] rows;
   //  bool row_activated_flag = false;
 
   public static bool attach_monitor_clipboard() {
-      mainContent = ClipboardManagerApplet.ClipboardManagerPopover.mainContent;
       monitor_clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
       monitor_clipboard_selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
       monitor_clipboard.owner_change.connect ((ev) => {
@@ -37,7 +34,6 @@ using Gtk;
         //add text
         ClipboardManagerApplet.ClipboardManagerPopover.addRow(1);
       });
-      print("text test");
       return true;
   }
 
@@ -108,14 +104,14 @@ namespace ClipboardManagerApplet {
     }
 
     public static void addRow(int ttype){
-      if (ttype==0){
+      if (ttype==0) {
         text = ClipboardManager.get_clipboard_text();
-      } else if (ttype ==1 ){
+      } else if (ttype ==1 ) {
         text = ClipboardManager.get_selected_text();
       } else {
         text = "";
       }
-      text = text.substring (0, 30);
+      print(text);
       Button clipMgr = new Button();
       Label clipMgrLabel = new Label(text);
       clipMgrLabel.set_max_width_chars(30);
