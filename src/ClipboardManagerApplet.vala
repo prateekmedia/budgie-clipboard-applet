@@ -104,11 +104,15 @@ namespace ClipboardManagerApplet {
       add(mainContent);
       mainContent.add(realContent);
       mainContent.add(setContent);
-      string settitext = "           Settings           ";
+      string settitext = "-------------------------------------";
+      Label setMgrLabel = new Label(@"$settitext");
+      setContent.add(setMgrLabel);      
+      string settitext1 = "Prefrences ";
       Button setMgr = new Button();
-      Label setMgrLabel = new Label(@"<i> $settitext </i>");
-      setMgrLabel.use_markup = true;
-      setMgr.add(setMgrLabel);
+      Label setMgrLabel1 = new Label(@"$settitext1");
+      setMgrLabel1.set_xalign(0);
+      setMgrLabel1.use_markup = true;
+      setMgr.add(setMgrLabel1);
       setContent.add(setMgr);
     }
 
@@ -143,6 +147,7 @@ namespace ClipboardManagerApplet {
         print((text.strip().length).to_string());
         Button clipMgr = new Button();
         Label clipMgrLabel = new Label(text);
+        clipMgrLabel.set_xalign(0);
         clipMgr.add(clipMgrLabel);
         clipMgr.clicked.connect(()=>{
           ClipboardManager.set_text(oriText);
