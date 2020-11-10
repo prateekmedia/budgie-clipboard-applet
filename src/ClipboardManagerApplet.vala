@@ -47,6 +47,7 @@ using Gtk;
       return text;
   }
   public static void set_text (string text) {
+      //  string text = button.get_label();
       var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
       clipboard.set_text (text, text.length);
   }
@@ -78,14 +79,11 @@ namespace ClipboardManagerApplet {
     public static ListBox realContent = new ListBox();
     public static ListBox setContent = new ListBox();
     public static string text;
-    public static bool itsEmpty = false; 
-    public static string oriText = "";
-    public static string LastText = "";
+    public static bool itsEmpty = false;
     public static int HISTORY_LENGTH = 10;
     public static Array<string> history = new Array<string> ();
     public static Array<string> rows = new Array<string> ();
     public static bool row_activated_flag = false;
-    public static int i = 0;
     /* process stuff */
     /* GUI stuff */
     /* misc stuff */
@@ -117,55 +115,45 @@ namespace ClipboardManagerApplet {
     }
 
     public static void addRow(int ttype){
-      if (ttype==0) {
-        text = ClipboardManager.get_clipboard_text();
-      } else if (ttype ==1 ) {
-        text = ClipboardManager.get_selected_text();
-      } else if (ttype ==2) {
-        text = "Clipboard is Currently Empty!";
-      } else {
-        text = "";
-      }
-      oriText = text;
-      if (text.strip().length == 0 || text == null) {
-        itsEmpty = true; 
-      } else {
-        itsEmpty = false; 
-       }
-       if ((ttype <=0 || ttype <=1) && (i==1) && !itsEmpty){
-         realContent.destroy();
-         mainContent.prepend(realContent);
-       }
-      if ((text != LastText && i<10) && !itsEmpty && ttype !=2 ) {
-        i +=1;
-        LastText = text;
-        update_handler(text);
-        text = text.replace("\n", " ").strip();
-        if (text.length >30){
-          text = text.substring(0,30) + "...";
+      if (ttype==0) { text = ClipboardManager.get_clipboard_text(); } 
+      else if (ttype ==1 ) { text = ClipboardManager.get_selected_text(); } 
+      else if (ttype ==2) { text = "Clipboard is Currently Empty!"; } 
+      else { text = ""; }
+      if (history.index (0) != text){
+        if (text.strip().length != 0 && text != null) {
+          if (ttype <=0 || ttype <=1){
+            realContent.destroy();
+            mainContent.prepend(realContent);
+            update_handler(text);
+          }
+          if (ttype !=2 ) {
+            for (int j = 0; j < history.length; j++) {
+              text = history.index(j);
+              text = text.replace("\n", " ").strip();
+              if (text.length >30){
+                text = text.substring(0,30) + "...";
+              }
+              //  print((text.strip().length).to_string());
+              Button clipMgr = new Button();
+              Label clipMgrLabel = new Label(text);
+              clipMgrLabel.set_xalign(0);
+              clipMgr.add(clipMgrLabel);
+              print(@"$j =>  $(history.index (j)) \n");
+              //  clipMgr.clicked.connect(ClipboardManager.set_text);
+              realContent.add(clipMgr);
+            }
+          } else {
+            Label clipMgrLabel = new Label(text);
+            realContent.add(clipMgrLabel);
+          }
+          Applet.popover.get_child().show_all();
         }
-        print((text.strip().length).to_string());
-        Button clipMgr = new Button();
-        Label clipMgrLabel = new Label(text);
-        clipMgrLabel.set_xalign(0);
-        clipMgr.add(clipMgrLabel);
-        clipMgr.clicked.connect(()=>{
-          ClipboardManager.set_text(oriText);
-        });
-        realContent.prepend(clipMgr);
-        Applet.popover.get_child().show_all();
-      } else {
-        i +=1;
-        Label clipMgrLabel = new Label(text);
-        realContent.prepend(clipMgrLabel);
-        Applet.popover.get_child().show_all();
-
       }
     }
     public static void update_history(string item){
       history.prepend_val (text);
       if (history.length > HISTORY_LENGTH){
-          history._remove_index (HISTORY_LENGTH);
+          history.remove_index (HISTORY_LENGTH);
       }
     }
     public static void update_handler(string item){
@@ -179,7 +167,7 @@ namespace ClipboardManagerApplet {
       history._remove_index(idx);
       row_activated_flag = true;
       
-      ClipboardManager.set_text(item);
+      //  ClipboardManager.set_text(item);
     }
     public static string insert_row(){
       return "";
