@@ -18,10 +18,6 @@ using Gtk;
   */
   private static Gtk.Clipboard monitor_clipboard;
   private static Gtk.Clipboard monitor_clipboard_selection;
-  //  int HISTORY_LENGTH = 10;
-  //  string ? [] history;
-  //  string ? [] rows;
-  //  bool row_activated_flag = false;
 
   public static bool attach_monitor_clipboard() {
       monitor_clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
@@ -78,6 +74,10 @@ namespace ClipboardManagerApplet {
     public static Clipboard clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD);
     public static ListBox mainContent = new ListBox();
     public static string text;
+    int HISTORY_LENGTH = 10;
+    string ? [] history;
+    string ? [] rows;
+    bool row_activated_flag = false;
     /* process stuff */
     /* GUI stuff */
     /* misc stuff */
@@ -111,21 +111,22 @@ namespace ClipboardManagerApplet {
       } else {
         text = "";
       }
+      if (text.length >30){
+        text = text.substring(0,30);
+      }
       print(text);
       Button clipMgr = new Button();
       Label clipMgrLabel = new Label(text);
-      clipMgrLabel.set_max_width_chars(30);
       clipMgr.add(clipMgrLabel);
       mainContent.add(clipMgr);
-      popover.get_child().show_all();
-      show_all();
+      Applet.popover.get_child().show_all();
     }
 
   }
 
   public class Applet: Budgie.Applet {
     private Gtk.EventBox indicatorBox;
-    private ClipboardManagerPopover popover = null;
+    public static ClipboardManagerPopover popover = null;
     private unowned Budgie.PopoverManager ? manager = null;
     public string uuid { public set; public get; }
     /* specifically to the settings section */
