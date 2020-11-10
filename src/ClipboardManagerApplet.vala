@@ -117,6 +117,8 @@ namespace ClipboardManagerApplet {
       clipMgrLabel.set_max_width_chars(30);
       clipMgr.add(clipMgrLabel);
       mainContent.add(clipMgr);
+      popover.get_child().show_all();
+      show_all();
     }
 
   }
@@ -152,10 +154,10 @@ namespace ClipboardManagerApplet {
         }
         return Gdk.EVENT_STOP;
       });
+      ClipboardManager.attach_monitor_clipboard();
       popover.get_child().show_all();
       show_all();
-      Timeout.add_seconds_full(Priority.LOW, 1, ClipboardManager.attach_monitor_clipboard);
-      Timeout.add( 1, ClipboardManager.attach_monitor_clipboard);
+      //  Timeout.add( 1, ClipboardManager.attach_monitor_clipboard);
     }
     public override void update_popovers(Budgie.PopoverManager ? manager) {
       this.manager = manager;
