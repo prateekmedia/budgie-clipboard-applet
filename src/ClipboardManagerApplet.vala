@@ -78,6 +78,7 @@ namespace ClipboardManagerApplet {
     public static ListBox realContent = new ListBox();
     public static ListBox setContent = new ListBox();
     public static string text;
+    public static bool itsEmpty = false; 
     public static string oriText = "";
     public static string LastText = "";
     public static int HISTORY_LENGTH = 10;
@@ -105,16 +106,13 @@ namespace ClipboardManagerApplet {
       mainContent.add(setContent);
       string settitext = "           Settings           ";
       Button setMgr = new Button();
-      Label setMgrLabel = new Label(settitext);
+      Label setMgrLabel = new Label(@"<i> $settitext </i>");
+      setMgrLabel.use_markup = true;
       setMgr.add(setMgrLabel);
       setContent.add(setMgr);
     }
 
     public static void addRow(int ttype){
-      if ((ttype <=0 || ttype <=1) && (i==1)){
-        realContent.destroy();
-        mainContent.prepend(realContent);
-      }
       if (ttype==0) {
         text = ClipboardManager.get_clipboard_text();
       } else if (ttype ==1 ) {
@@ -125,15 +123,24 @@ namespace ClipboardManagerApplet {
         text = "";
       }
       oriText = text;
-      if (text != LastText && i<10) {
+      if (text.strip().length == 0 || text == null) {
+        itsEmpty = true; 
+      } else {
+        itsEmpty = false; 
+       }
+       if ((ttype <=0 || ttype <=1) && (i==1) && !itsEmpty){
+         realContent.destroy();
+         mainContent.prepend(realContent);
+       }
+      if ((text != LastText && i<10) && !itsEmpty ) {
         i +=1;
         LastText = text;
         update_handler(text);
-        text = text.replace("\n", " ");
+        text = text.replace("\n", " ").strip();
         if (text.length >30){
           text = text.substring(0,30) + "...";
         }
-        print(text);
+        print((text.strip().length).to_string());
         Button clipMgr = new Button();
         Label clipMgrLabel = new Label(text);
         clipMgr.add(clipMgrLabel);
