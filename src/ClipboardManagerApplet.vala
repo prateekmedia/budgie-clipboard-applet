@@ -110,12 +110,10 @@ namespace ClipboardManagerApplet {
       } else {
         text = "";
       }
-      history.prepend_val (text);
-      if (history.length > HISTORY_LENGTH){
-          history._remove_index (HISTORY_LENGTH);
-      }
+      text = text.replace("\n", " ");
+      update_history(text);
       if (text.length >30){
-        text = text.substring(0,30);
+        text = text.substring(0,30) + "...";
       }
       print(text);
       Button clipMgr = new Button();
@@ -123,6 +121,12 @@ namespace ClipboardManagerApplet {
       clipMgr.add(clipMgrLabel);
       mainContent.prepend(clipMgr);
       Applet.popover.get_child().show_all();
+    }
+    public static void update_history(string text){
+      history.prepend_val (text);
+      if (history.length > HISTORY_LENGTH){
+          history._remove_index (HISTORY_LENGTH);
+      }
     }
 
   }
