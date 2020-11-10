@@ -109,7 +109,7 @@ namespace ClipboardManagerApplet {
       setContent.add(setMgrLabel);      
       string settitext1 = "Prefrences ";
       Button setMgr = new Button();
-      Label setMgrLabel1 = new Label(@"$settitext1");
+      Label setMgrLabel1 = new Label(@"<b>$settitext1</b>");
       setMgrLabel1.set_xalign(0);
       setMgrLabel1.use_markup = true;
       setMgr.add(setMgrLabel1);
@@ -136,7 +136,7 @@ namespace ClipboardManagerApplet {
          realContent.destroy();
          mainContent.prepend(realContent);
        }
-      if ((text != LastText && i<10) && !itsEmpty ) {
+      if ((text != LastText && i<10) && !itsEmpty && ttype !=2 ) {
         i +=1;
         LastText = text;
         update_handler(text);
@@ -154,6 +154,12 @@ namespace ClipboardManagerApplet {
         });
         realContent.prepend(clipMgr);
         Applet.popover.get_child().show_all();
+      } else {
+        i +=1;
+        Label clipMgrLabel = new Label(text);
+        realContent.prepend(clipMgrLabel);
+        Applet.popover.get_child().show_all();
+
       }
     }
     public static void update_history(string item){
