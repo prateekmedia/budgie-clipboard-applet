@@ -19,17 +19,19 @@ using Gtk;
   private static Gtk.Clipboard monitor_clipboard;
   private static Gtk.Clipboard monitor_clipboard_selection;
 
-  public static bool attach_monitor_clipboard() {
+  public static bool attach_monitor_clipboard(bool sclip) {
       monitor_clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
-      monitor_clipboard_selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
       monitor_clipboard.owner_change.connect ((ev) => {
         //add text        
         ClipboardManagerApplet.ClipboardManagerPopover.addRow(0);
       });
-      monitor_clipboard_selection.owner_change.connect ((ev) => {
-        //add text
-        ClipboardManagerApplet.ClipboardManagerPopover.addRow(1);
-      });
+      if (sclip){
+        monitor_clipboard_selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
+        monitor_clipboard_selection.owner_change.connect ((ev) => {
+          //add text
+          ClipboardManagerApplet.ClipboardManagerPopover.addRow(1);
+        });
+      }
       return true;
   }
 
@@ -73,11 +75,16 @@ namespace ClipboardManagerApplet {
     private Image indicatorIcon;
     public static Clipboard clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD);
     public static ListBox mainContent = new ListBox();
+    public static ListBox realContent = new ListBox();
+    public static ListBox setContent = new ListBox();
     public static string text;
+    public static string oriText = "";
+    public static string LastText = "";
     public static int HISTORY_LENGTH = 10;
     public static Array<string> history = new Array<string> ();
     public static Array<string> rows = new Array<string> ();
-    bool row_activated_flag = false;
+    public static bool row_activated_flag = false;
+    public static int i = 0;
     /* process stuff */
     /* GUI stuff */
     /* misc stuff */
@@ -94,39 +101,78 @@ namespace ClipboardManagerApplet {
 
       /* box */
       add(mainContent);
-      string text = "Clipboard is Currently EMPTY!";
-      Button clipMgr = new Button();
-      Label clipMgrLabel = new Label(null);
-      clipMgrLabel.set_text(text);
-      clipMgr.add(clipMgrLabel);
-      mainContent.add(clipMgr);
+      mainContent.add(realContent);
+      mainContent.add(setContent);
+      string settitext = "           Settings           ";
+      Button setMgr = new Button();
+      Label setMgrLabel = new Label(settitext);
+      setMgr.add(setMgrLabel);
+      setContent.add(setMgr);
     }
 
     public static void addRow(int ttype){
+      if ((ttype <=0 || ttype <=1) && (i==1)){
+        realContent.destroy();
+        mainContent.prepend(realContent);
+      }
       if (ttype==0) {
         text = ClipboardManager.get_clipboard_text();
       } else if (ttype ==1 ) {
         text = ClipboardManager.get_selected_text();
+      } else if (ttype ==2) {
+        text = "Clipboard is Currently Empty!";
       } else {
         text = "";
       }
-      text = text.replace("\n", " ");
-      update_history(text);
-      if (text.length >30){
-        text = text.substring(0,30) + "...";
+      oriText = text;
+      if (text != LastText && i<10) {
+        i +=1;
+        LastText = text;
+        update_handler(text);
+        text = text.replace("\n", " ");
+        if (text.length >30){
+          text = text.substring(0,30) + "...";
+        }
+        print(text);
+        Button clipMgr = new Button();
+        Label clipMgrLabel = new Label(text);
+        clipMgr.add(clipMgrLabel);
+        clipMgr.clicked.connect(()=>{
+          ClipboardManager.set_text(oriText);
+        });
+        realContent.prepend(clipMgr);
+        Applet.popover.get_child().show_all();
       }
-      print(text);
-      Button clipMgr = new Button();
-      Label clipMgrLabel = new Label(text);
-      clipMgr.add(clipMgrLabel);
-      mainContent.prepend(clipMgr);
-      Applet.popover.get_child().show_all();
     }
-    public static void update_history(string text){
+    public static void update_history(string item){
       history.prepend_val (text);
       if (history.length > HISTORY_LENGTH){
           history._remove_index (HISTORY_LENGTH);
       }
+    }
+    public static void update_handler(string item){
+      update_history(item);
+    }
+    public static void __on_row_activated(Button button, string item , Array<string> rows){
+      //  var idx = rows.index(button.get_parent());
+      var idx= 0;
+      item = history.index (idx);
+      
+      history._remove_index(idx);
+      row_activated_flag = true;
+      
+      ClipboardManager.set_text(item);
+    }
+    public static string insert_row(){
+      return "";
+    }
+    public static void __update_ui(string item){
+      int j =0;
+      while (j < history.length) {
+        print(history.index (j));
+        j++;
+      }
+
     }
 
   }
@@ -135,6 +181,7 @@ namespace ClipboardManagerApplet {
     private Gtk.EventBox indicatorBox;
     public static ClipboardManagerPopover popover = null;
     private unowned Budgie.PopoverManager ? manager = null;
+    private static bool select_clip = false;
     public string uuid { public set; public get; }
     /* specifically to the settings section */
     public override bool supports_settings() {
@@ -162,7 +209,8 @@ namespace ClipboardManagerApplet {
         }
         return Gdk.EVENT_STOP;
       });
-      ClipboardManager.attach_monitor_clipboard();
+      ClipboardManagerPopover.addRow(2);
+      ClipboardManager.attach_monitor_clipboard(select_clip);
       popover.get_child().show_all();
       show_all();
       //  Timeout.add( 1, ClipboardManager.attach_monitor_clipboard);
