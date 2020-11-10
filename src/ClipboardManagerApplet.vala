@@ -46,10 +46,11 @@ using Gtk;
       string text = clipboard.wait_for_text ();
       return text;
   }
-  public static void set_text (string text) {
+  public static void set_text (string item) {
       //  string text = button.get_label();
+      //  string item = ClipboardManagerApplet.ClipboardManagerPopover.history.index (j);
       var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
-      clipboard.set_text (text, text.length);
+      clipboard.set_text (item, item.length);
   }
 }
 
@@ -139,7 +140,9 @@ namespace ClipboardManagerApplet {
               clipMgrLabel.set_xalign(0);
               clipMgr.add(clipMgrLabel);
               print(@"$j =>  $(history.index (j)) \n");
-              //  clipMgr.clicked.connect(ClipboardManager.set_text);
+              clipMgr.clicked.connect(()=>{
+                ClipboardManager.set_text(text);
+              });
               realContent.add(clipMgr);
             }
           } else {
