@@ -74,9 +74,9 @@ namespace ClipboardManagerApplet {
     public static Clipboard clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD);
     public static ListBox mainContent = new ListBox();
     public static string text;
-    int HISTORY_LENGTH = 10;
-    string ? [] history;
-    string ? [] rows;
+    public static int HISTORY_LENGTH = 10;
+    public static Array<string> history = new Array<string> ();
+    public static Array<string> rows = new Array<string> ();
     bool row_activated_flag = false;
     /* process stuff */
     /* GUI stuff */
@@ -98,7 +98,6 @@ namespace ClipboardManagerApplet {
       Button clipMgr = new Button();
       Label clipMgrLabel = new Label(null);
       clipMgrLabel.set_text(text);
-      clipMgrLabel.set_max_width_chars(30);
       clipMgr.add(clipMgrLabel);
       mainContent.add(clipMgr);
     }
@@ -111,6 +110,10 @@ namespace ClipboardManagerApplet {
       } else {
         text = "";
       }
+      history.prepend_val (text);
+      if (history.length > HISTORY_LENGTH){
+          history._remove_index (HISTORY_LENGTH);
+      }
       if (text.length >30){
         text = text.substring(0,30);
       }
@@ -118,7 +121,7 @@ namespace ClipboardManagerApplet {
       Button clipMgr = new Button();
       Label clipMgrLabel = new Label(text);
       clipMgr.add(clipMgrLabel);
-      mainContent.add(clipMgr);
+      mainContent.prepend(clipMgr);
       Applet.popover.get_child().show_all();
     }
 
