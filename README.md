@@ -6,7 +6,7 @@ A clipboard manager applet that can help you to store and manage clipboard conte
 
 ### *For Solus* 
 
-- `sudo eopkg it budgie-desktop-devel accountsservice-devel alsa-lib-devel gnome-bluetooth-devel gtk-doc gnome-settings-daemon-devel ibus-devel libgnome-desktop-devel libgnome-menus-devel libnotify-devel libpeas-devel libwnck-devel mutter-devel pulseaudio-devel sassc upower-devel vala -c system.devel`
+- `sudo eopkg it vala budgie-desktop-devel meson`
 
 ### *For Debian/ Ubuntu or its Derivatives* 
 
