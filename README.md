@@ -1,10 +1,9 @@
-<h1 align="center">Budgie Clipboard Manager</h1>  
-<h2 align="center">Under Development</h2>
-A clipboard manager applet that can help you to store and manage clipboard content on the Budgie desktop, Written using Vala.
-
-
-**To debug the applet type `budgie-panel --replace &!` on the terminal**
-
+<h1 align="center">Budgie Clipboard Manager</h1>
+A clipboard manager applet that can help you to store and manage clipboard content on the Budgie desktop, Written using Vala.  
+  
+  
+**To debug the applet type `budgie-panel --replace &!` on the terminal**  
+  
 # Dependencies for Building from source
 
 ### *For Solus* 
