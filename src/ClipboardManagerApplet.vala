@@ -50,7 +50,9 @@ using Gtk;
       //  string text = button.get_label();
       //  string item = ClipboardManagerApplet.ClipboardManagerPopover.history.index (j);
       var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
-      clipboard.set_text (item, item.length);
+      if (item != clipboard.wait_for_text ()){
+        clipboard.set_text (item, item.length);
+      }
   }
 }
 
@@ -61,7 +63,9 @@ namespace ClipboardManagerApplet {
     //  GLib.Settings ? settings = null
 
     public ClipboardManagerSettings(GLib.Settings ? settings) {
-	      // Gtk stuff, widgets etc. here
+        // Gtk stuff, widgets etc. here
+        Label newLabel = new Gtk.Label("This is a sample label");
+        add(newLabel);
     }
   }
 
@@ -85,6 +89,7 @@ namespace ClipboardManagerApplet {
     public static Array<string> history = new Array<string> ();
     public static Array<string> rows = new Array<string> ();
     public static bool row_activated_flag = false;
+    public static int idx;
     /* process stuff */
     /* GUI stuff */
     /* misc stuff */
@@ -120,7 +125,7 @@ namespace ClipboardManagerApplet {
       else if (ttype ==1 ) { text = ClipboardManager.get_selected_text(); } 
       else if (ttype ==2) { text = "Clipboard is Currently Empty!"; } 
       else { text = ""; }
-      if (history.index (0) != text){
+      if (history.index (0) != text && !row_activated_flag){
         if (text.strip().length != 0 && text != null) {
           if (ttype <=0 || ttype <=1){
             realContent.destroy();
@@ -134,15 +139,14 @@ namespace ClipboardManagerApplet {
               if (text.length >30){
                 text = text.substring(0,30) + "...";
               }
-              //  print((text.strip().length).to_string());
+              int copy = j;
               Button clipMgr = new Button();
               Label clipMgrLabel = new Label(text);
               clipMgrLabel.set_xalign(0);
               clipMgr.add(clipMgrLabel);
               print(@"$j =>  $(history.index (j)) \n");
-              clipMgr.clicked.connect(()=>{
-                ClipboardManager.set_text(text);
-              });
+              rows.append_val(text);
+              clipMgr.clicked.connect(()=>__on_row_activated(copy));
               realContent.add(clipMgr);
             }
           } else {
@@ -151,6 +155,9 @@ namespace ClipboardManagerApplet {
           }
           Applet.popover.get_child().show_all();
         }
+      }
+      else if (row_activated_flag){
+        row_activated_flag = false;
       }
     }
     public static void update_history(string item){
@@ -162,15 +169,10 @@ namespace ClipboardManagerApplet {
     public static void update_handler(string item){
       update_history(item);
     }
-    public static void __on_row_activated(Button button, string item , Array<string> rows){
-      //  var idx = rows.index(button.get_parent());
-      var idx= 0;
-      item = history.index (idx);
-      
-      history._remove_index(idx);
+    public static void __on_row_activated(int copy){
       row_activated_flag = true;
-      
-      //  ClipboardManager.set_text(item);
+      ClipboardManager.set_text(history.index(copy));
+      Applet.popover.hide();
     }
     public static string insert_row(){
       return "";
@@ -190,7 +192,9 @@ namespace ClipboardManagerApplet {
     private Gtk.EventBox indicatorBox;
     public static ClipboardManagerPopover popover = null;
     private unowned Budgie.PopoverManager ? manager = null;
-    private static bool select_clip = false;
+    public static GLib.Settings setting = new GLib.Settings("com.prateekmedia.clipboardmanager");
+    //  public static bool select_clip = false;
+    public static bool select_clip = setting.get_boolean("selectclip");
     public string uuid { public set; public get; }
     /* specifically to the settings section */
     public override bool supports_settings() {

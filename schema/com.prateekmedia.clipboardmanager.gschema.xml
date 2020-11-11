@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+    <schema path="/com/prateekmedia/clipboardmanager/"
+            id="com.prateekmedia.clipboardmanager">
+        <key type="b" name="selectclip">
+            <summary>Adds Selection to Clipboard</summary>
+            <description>The text that you select will be added automatically to the clipboard if value is true.</description>
+            <default>false</default>
+        </key>
+        <key type="b" name="selectimage">
+            <summary>Adds Selection to Clipboard</summary>
+            <description>The image that you copy will be added automatically to the clipboard if value is true.</description>
+            <default>false</default>
+        </key>
+    </schema>
+</schemalist>
+
+

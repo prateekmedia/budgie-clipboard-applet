@@ -2,6 +2,9 @@
 <h2 align="center">Under Development</h2>
 A clipboard manager applet that can help you to store and manage clipboard content on the Budgie desktop, Written using Vala.
 
+
+**To debug the applet type `budgie-panel --replace &!` on the terminal**
+
 # Dependencies for Building from source
 
 ### *For Solus* 
@@ -16,7 +19,7 @@ A clipboard manager applet that can help you to store and manage clipboard conte
 - `sudo pacman -S budgie-desktop json-glib libgee libpeas intltool meson ninja vala`
 
 # Building from source
-Run from the repo's folder:
+Download the zip & then run from the repo's folder:
 
 - `mkdir build && cd build`
 
@@ -25,4 +28,3 @@ Run from the repo's folder:
 - `ninja`
 
 - `sudo ninja install`
-

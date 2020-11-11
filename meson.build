@@ -32,9 +32,9 @@ LOCALE_DIR = join_paths(prefix, get_option('localedir'))
 VAPI_DIR = join_paths(meson.source_root(), 
                       'vapi')
 
-# install_data('schema/org.ubuntubudgie.plugins.budgie-hotcorners.gschema.xml',
-#    install_dir: '/usr/share/glib-2.0/schemas'
-# )
+install_data('schema/com.prateekmedia.clipboardmanager.gschema.xml',
+   install_dir: '/usr/share/glib-2.0/schemas'
+)
 
 
 PIXMAPS_DIR = join_paths(datadir, 'pixmaps')
@@ -47,4 +47,4 @@ subdir('src')
 subdir('po')
 subdir('icons')
 
-# meson.add_install_script('meson_post_install')
+meson.add_install_script('meson_post_install')
