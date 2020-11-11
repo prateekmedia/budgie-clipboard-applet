@@ -1,4 +1,5 @@
-<h1 align="center">Budgie Clipboard Manager</h1>
+<h1 align="center">Budgie Clipboard Manager</h1>  
+<h2 align="center">Under Development</h2>
 A clipboard manager applet that can help you to store and manage clipboard content on the Budgie desktop, Written using Vala.
 
 # Dependencies for Building from source
