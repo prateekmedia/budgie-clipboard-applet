@@ -134,7 +134,7 @@ namespace ClipboardManagerApplet {
         }
        } 
       else { text = ""; }
-      if (history.index (0) != text){
+      if (history.index (0) != text || specialMark == 0){
         if (text.strip().length != 0 && text != null) {
           if (ttype >=0 && ttype <=1 || ttyped==1){
             realContent.destroy();
