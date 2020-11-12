@@ -90,6 +90,7 @@ namespace ClipboardManagerApplet {
     public static Array<string> rows = new Array<string> ();
     public static bool row_activated_flag = false;
     public static int idx;
+    public static int ttyped = 0;
     public static int specialMark = 0;
     /* process stuff */
     /* GUI stuff */
@@ -129,13 +130,14 @@ namespace ClipboardManagerApplet {
         if (text.strip().length == 0 || text == null){
           text = "Clipboard is Currently Empty!";
         } else {
-          ttype = 1;
+            text = ClipboardManager.get_clipboard_text();
+            ttyped = 1;
         }
        } 
       else { text = ""; }
       if (history.index (0) != text){
         if (text.strip().length != 0 && text != null) {
-          if (ttype >=0 && ttype <=1){
+          if (ttype >=0 && ttype <=1 || ttyped==1){
             realContent.destroy();
             mainContent.prepend(realContent);
             if (!row_activated_flag){
@@ -153,7 +155,7 @@ namespace ClipboardManagerApplet {
             }
             row_activated_flag = false;
           }
-          if (ttype !=2) {
+          if (ttype !=2 || ttyped==1) {
             if (history.length ==1){
               indicatorIcon.set_from_icon_name("clipboard-text-outline-symbolic", Gtk.IconSize.MENU);
             }
