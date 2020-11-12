@@ -130,7 +130,6 @@ namespace ClipboardManagerApplet {
         if (text.strip().length == 0 || text == null){
           text = "Clipboard is Currently Empty!";
         } else {
-            text = ClipboardManager.get_clipboard_text();
             ttyped = 1;
         }
        } 
