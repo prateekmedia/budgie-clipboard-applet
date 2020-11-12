@@ -12,6 +12,17 @@
             <description>The image that you copy will be added automatically to the clipboard if value is true.</description>
             <default>false</default>
         </key>
+        <key type="b" name="copyselected">
+            <summary>Copy Selection automatically to Clipboard</summary>
+            <description>This will tell applet whether to automatically copy selection to clipboard or not.</description>
+            <default>false</default>
+        </key>
+        <key type="i" name="historylength">
+            <summary>History Length</summary>
+            <description>Maximum number of clips history can hold.</description>
+            <default>10</default>   
+            <range min="2" max="100" />
+        </key>
     </schema>
 </schemalist>
 
