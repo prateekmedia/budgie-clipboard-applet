@@ -16,7 +16,7 @@ A clipboard manager applet that can help you to store and manage clipboard conte
 - `sudo apt install budgie-core-dev libglib2.0-dev libgtk-3-dev libpeas-dev meson valac`
 
 ### *For Arch or its Derivatives*
-- `sudo pacman -S budgie-desktop json-glib libgee libpeas intltool meson ninja vala`
+- `sudo pacman -S budgie-desktop libpeas intltool meson vala`
 
 # Building from source
 Download the zip & then run from the repo's folder:
@@ -24,7 +24,5 @@ Download the zip & then run from the repo's folder:
 - `mkdir build && cd build`
 
 - `meson --buildtype plain --prefix=/usr --libdir=/usr/lib`
-
-- `ninja`
 
 - `sudo ninja install`
