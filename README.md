@@ -9,7 +9,7 @@ A clipboard manager applet that can help you to store and manage clipboard conte
 
 ### *For Solus* 
 
-- `sudo eopkg it vala budgie-desktop-devel meson`
+- `sudo eopkg it budgie-desktop-devel meson vala`
 
 ### *For Debian/ Ubuntu or its Derivatives* 
 
