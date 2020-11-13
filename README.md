@@ -5,7 +5,7 @@ A clipboard manager applet that can help you to store and manage clipboard conte
   
 **To debug the applet type `budgie-panel --replace &!` on the terminal**  
   
-# Dependencies for Building from source
+## Dependencies for Building from source
 
 ### *For Solus* 
 
@@ -18,7 +18,7 @@ A clipboard manager applet that can help you to store and manage clipboard conte
 ### *For Arch or its Derivatives*
 - `sudo pacman -S budgie-desktop libpeas intltool meson vala`
 
-# Building from source
+## Building from source
 Download the zip & then run from the repo's folder:
 
 - `mkdir build && cd build`
