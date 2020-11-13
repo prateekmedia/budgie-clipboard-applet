@@ -1,4 +1,4 @@
-<p align="center"><a href="#dependencies-for-building-from-source"><img src="https://raw.githubusercontent.com/prateekmedia/budgie-clipboard-applet/main/icons/clipboard-text-outline-symbolic.svg" height=80px alt="NSS Logo"/></a></p>
+<p align="center"><a href="#dependencies-for-building-from-source"><img src="https://user-images.githubusercontent.com/41370460/99038780-1614da00-25ac-11eb-8dd4-7ce72fd639a1.png" height=80px alt="NSS Logo"/></a></p>
 <h1 align="center">Budgie Clipboard Manager</h1>
 A clipboard manager applet that can help you to store and manage clipboard content on the Budgie desktop, Written using Vala.  
   
