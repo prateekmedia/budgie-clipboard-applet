@@ -2,5 +2,6 @@
 .vscode
 build
 build.sh
+nohup.out
 todo.md
 *.cfg
