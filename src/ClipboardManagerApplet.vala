@@ -127,7 +127,7 @@ namespace ClipboardManagerApplet {
       if (ttype==0) { text = ClipboardManager.get_clipboard_text(); } 
       else if (ttype ==1 ) { text = ClipboardManager.get_selected_text(); } 
       else if (ttype ==2) { 
-        if (text.strip().length == 0 || text == null){
+        if (text == null || text.strip().length ==0){
           text = "Clipboard is Currently Empty!";
         } else {
             ttyped = 1;
