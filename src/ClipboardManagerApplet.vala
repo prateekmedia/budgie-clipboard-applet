@@ -105,14 +105,15 @@ namespace ClipboardManagerApplet {
           int curr_val = historySpin.get_value_as_int();
           if(ClipboardManagerPopover.HISTORY_LENGTH != curr_val){
             settings.set_int("historylength" , curr_val);
-            ClipboardManagerPopover.HISTORY_LENGTH = curr_val;
+            //  ClipboardManagerPopover.HISTORY_LENGTH = curr_val;
+            ClipboardManagerPopover.nav_visible();
           }
         });
 
         selClipTggle.state_set.connect (()=>{
-          bool curr_val = selClipTggle.get_active();
-          settings.set_boolean("selectclip" , curr_val);
-          if(curr_val){
+          bool curr_act = selClipTggle.get_active();
+          settings.set_boolean("selectclip" , curr_act);
+          if(curr_act){
             copySelTggle.set_sensitive (true);
           } else {
             copySelTggle.set_sensitive (false);
@@ -121,9 +122,9 @@ namespace ClipboardManagerApplet {
         });
 
         copySelTggle.state_set.connect (()=>{
-          bool curr_val = copySelTggle.get_active();
-          settings.set_boolean("copyselected" , curr_val);
-          ClipboardManagerPopover.copyselected = curr_val;
+          bool curr_act = copySelTggle.get_active();
+          settings.set_boolean("copyselected" , curr_act);
+          ClipboardManagerPopover.copyselected = curr_act;
           return false;
         });
     }
@@ -140,8 +141,12 @@ namespace ClipboardManagerApplet {
     public static EventBox indicatorBox;
     public static Image indicatorIcon;
     public static Clipboard clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD);
-    public static ListBox mainContent = new ListBox();
+    public static Box mainContent = new Box(Gtk.Orientation.VERTICAL, 0);
+    public static Entry search_box = new Gtk.Entry ();
+    public static Box scrbox = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
     public static ListBox realContent = new ListBox();
+    public static Box navContainer = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
+    public static Box navbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
     public static ListBox setContent = new ListBox();
     public static string text;
     public static bool copyselected =  Applet.setting.get_boolean("copyselected");
@@ -166,8 +171,16 @@ namespace ClipboardManagerApplet {
 
       /* box */
       add(mainContent);
-      mainContent.add(realContent);
+      scrbox.add(realContent);
+      mainContent.add(search_box);
+      mainContent.add(scrbox);
+      mainContent.add(navContainer);
       mainContent.add(setContent);
+
+      nav_visible();
+
+      search_box.set_placeholder_text("Type here to search....");
+
       string settitext = "-------------------------------------";
       Label setMgrLabel = new Label(@"$settitext");
       setContent.add(setMgrLabel);      
@@ -179,6 +192,9 @@ namespace ClipboardManagerApplet {
       emptyClipLabel.set_xalign(0);
       emptyClipLabel.use_markup = true;
       emptyClip.add(emptyClipLabel);
+      Label pager = new Gtk.Label(@"$(history.length)/$HISTORY_LENGTH");
+      pager.set_halign (Gtk.Align.CENTER);
+      setContent.add(pager);
       setContent.add(emptyClip);
     }
 
@@ -198,7 +214,8 @@ namespace ClipboardManagerApplet {
         if (text.strip().length != 0 && text != null) {
           if (ttype >=0 && ttype <=1 || ttyped==1){
             realContent.destroy();
-            mainContent.prepend(realContent);
+            scrbox.add(realContent);
+            search_box.preedit_changed.connect (on_search_activate);
             if (!row_activated_flag){
               for (int j = 0; j < history.length; j++){
                 if(text == history.index(j)){
@@ -219,13 +236,21 @@ namespace ClipboardManagerApplet {
               indicatorIcon.set_from_icon_name("clipboard-text-outline-symbolic", Gtk.IconSize.MENU);
             }
             for (int j = 0; j < history.length; j++) {
+              if(j>=10){
+                break;
+              }
               text = history.index(j);
               text = text.replace("\n", " ").strip();
               if (text.length >30){
                 text = text.substring(0,30) + "...";
               }
               int copy = j;
+              Box btnlist = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+              Box thislist = btnlist;
               Button clipMgr = new Button();
+              Button dismissbtn = new Button();
+              Label dissLabel = new Label("X");
+              dismissbtn.add(dissLabel);
               Label clipMgrLabel = new Label(text);
               if (specialMark ==j){
                 clipMgrLabel.set_label(@"<i><b><u>$text</u></b></i>");
@@ -233,10 +258,17 @@ namespace ClipboardManagerApplet {
               }
               clipMgrLabel.set_xalign(0);
               clipMgr.add(clipMgrLabel);
+              clipMgr.set_hexpand(true);
               print(@"$j =>  $(history.index (j)) \n");
               rows.append_val(text);
+              dismissbtn.clicked.connect(()=>{
+                thislist.destroy();
+                history.remove_index (copy);
+              });
               clipMgr.clicked.connect(()=>__on_row_activated(copy));
-              realContent.add(clipMgr);
+              btnlist.add(clipMgr);
+              btnlist.add(dismissbtn);
+              realContent.add(btnlist);
             }
           } else {
             Label clipMgrLabel = new Label(text);
@@ -250,7 +282,7 @@ namespace ClipboardManagerApplet {
     public static void remove_row(){
       if (history.length >0){
         realContent.destroy();
-        mainContent.prepend(realContent); 
+        scrbox.add(realContent); 
         history.remove_range(0, history.length);
         indicatorIcon.set_from_icon_name("clipboard-outline-symbolic", Gtk.IconSize.MENU);
         Applet.popover.hide();
@@ -274,6 +306,32 @@ namespace ClipboardManagerApplet {
           history.remove_range(HISTORY_LENGTH-1 , history.length - HISTORY_LENGTH);
         }
       }
+    }
+    public static void nav_visible(){
+      navbox.destroy();
+      navbox = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+      navContainer.add(navbox);
+      Label prvNavLabel = new Gtk.Label("⟵");
+      Button prvBtn = new Button();
+      //  prvBtn.clicked.connect(remove_row);
+      prvNavLabel.set_halign (Gtk.Align.CENTER);
+      prvNavLabel.set_hexpand (true);
+      Label pageNo = new Gtk.Label(@"1/1");
+      pageNo.set_halign (Gtk.Align.CENTER);
+      Label nxtNavLabel = new Gtk.Label("⟶");
+      Button nxtBtn = new Button();
+      nxtNavLabel.set_halign (Gtk.Align.CENTER);
+      nxtNavLabel.set_hexpand (true);
+
+      prvBtn.add(prvNavLabel);
+      nxtBtn.add(nxtNavLabel);
+
+      navbox.add(prvBtn);
+      navbox.add(pageNo);
+      navbox.add(nxtBtn);
+    }
+    public static void on_search_activate (string name) {
+      print (@"\nHello $name!\n\n");
     }
     public static void __on_row_activated(int copy){
       row_activated_flag = true;
