@@ -105,8 +105,10 @@ namespace ClipboardManagerApplet {
           int curr_val = historySpin.get_value_as_int();
           if(ClipboardManagerPopover.HISTORY_LENGTH != curr_val){
             settings.set_int("historylength" , curr_val);
-            //  ClipboardManagerPopover.HISTORY_LENGTH = curr_val;
-            ClipboardManagerPopover.nav_visible();
+            ClipboardManagerPopover.HISTORY_LENGTH = curr_val;
+            ClipboardManagerPopover.update_pager();
+            //  ClipboardManagerPopover.nav_visible();
+
           }
         });
 
@@ -148,6 +150,7 @@ namespace ClipboardManagerApplet {
     public static Box navContainer = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
     public static Box navbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
     public static ListBox setContent = new ListBox();
+    public static Label pager = new Gtk.Label(null);
     public static string text;
     public static bool copyselected =  Applet.setting.get_boolean("copyselected");
     public static int HISTORY_LENGTH = Applet.setting.get_int("historylength");
@@ -192,10 +195,10 @@ namespace ClipboardManagerApplet {
       emptyClipLabel.set_xalign(0);
       emptyClipLabel.use_markup = true;
       emptyClip.add(emptyClipLabel);
-      Label pager = new Gtk.Label(@"$(history.length)/$HISTORY_LENGTH");
-      pager.set_halign (Gtk.Align.CENTER);
-      setContent.add(pager);
       setContent.add(emptyClip);
+      pager.set_label(@"$(history.length)/$HISTORY_LENGTH");
+      pager.set_halign (Gtk.Align.CENTER);
+      setContent.prepend(pager);
     }
 
     public static void addRow(int ttype){
@@ -274,6 +277,7 @@ namespace ClipboardManagerApplet {
             Label clipMgrLabel = new Label(text);
             realContent.add(clipMgrLabel);
           }
+          update_pager();
           Applet.popover.get_child().show_all();
         }
       }
@@ -293,6 +297,7 @@ namespace ClipboardManagerApplet {
         for (int i = 0; i < history.length ; i++) {
           print ("%s\n", history.index (i));
         }
+        update_pager();
         Applet.popover.get_child().show_all();
       }
     }
@@ -306,6 +311,13 @@ namespace ClipboardManagerApplet {
           history.remove_range(HISTORY_LENGTH-1 , history.length - HISTORY_LENGTH);
         }
       }
+    }
+    public static void update_pager(){
+      pager.destroy();
+      pager.set_label(@"$(history.length)/$HISTORY_LENGTH");
+      pager.set_halign (Gtk.Align.CENTER);
+      setContent.prepend(pager);
+      Applet.popover.get_child().show_all();
     }
     public static void nav_visible(){
       navbox.destroy();
