@@ -161,6 +161,7 @@ namespace ClipboardManagerApplet {
     public static bool row_activated_flag = false;
     public static int idx;
     public static int pageNav = 0;
+    public const int maxPageitems = 10;
     public static int currPage = 1;
     public static int ttyped = 0;
     public static int specialMark = 0;
@@ -244,7 +245,7 @@ namespace ClipboardManagerApplet {
               indicatorIcon.set_from_icon_name("clipboard-text-outline-symbolic", Gtk.IconSize.MENU);
             }
             for (int j = 0; j < history.length; j++) {
-              if(j%10 == 0){
+              if(j%maxPageitems == 0){
                 pageNav+=1;
                 listbax.append_val(new Gtk.ListBox());
               }
@@ -287,10 +288,14 @@ namespace ClipboardManagerApplet {
             Label clipMgrLabel = new Label(text);
             listbax.index(0).add(clipMgrLabel);
           }
+          print(@"\nList Box(addRpw) length is $(listbax.length)\n");
           nav_visible();
-          realContent.add(listbax.index(currPage-1));
+          for(int i = 0; i<listbax.length; i++){
+            realContent.add(listbax.index(i));
+          }
           update_pager();
           Applet.popover.get_child().show_all();
+          hide_all_listbax_but_show(currPage - 1);
         }
       }
     }
@@ -330,7 +335,7 @@ namespace ClipboardManagerApplet {
       setContent.prepend(pager);
     }
     public static void nav_visible(){
-      if(pageNav>1 && history.length >10){
+      if(pageNav>1 && history.length >maxPageitems){
         navbox.destroy();
         navbox = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
         navContainer.add(navbox);
@@ -344,21 +349,17 @@ namespace ClipboardManagerApplet {
         Button nxtBtn = new Button();
         prvBtn.clicked.connect(()=>{
           if (currPage >1){
-          realContent.destroy();
-          scrbox.add(realContent);
           currPage-=1;
-          realContent.add(listbax.index(currPage-1));
           pageNo.set_label(@"$currPage/$pageNav");
           Applet.popover.get_child().show_all();
+          hide_all_listbax_but_show(currPage - 1);
         }});
         nxtBtn.clicked.connect(()=>{
           if (currPage < listbax.length){
-          realContent.destroy();
-          scrbox.add(realContent);
           currPage+=1;
-          realContent.add(listbax.index(currPage-1));
           pageNo.set_label(@"$currPage/$pageNav");
           Applet.popover.get_child().show_all();
+          hide_all_listbax_but_show(currPage - 1);
         }});
         nxtNavLabel.set_halign (Gtk.Align.CENTER);
         nxtNavLabel.set_hexpand (true);
@@ -372,6 +373,13 @@ namespace ClipboardManagerApplet {
       } else{
         navbox.destroy();
       }
+    }
+    public static void hide_all_listbax_but_show(int thiss = currPage - 1){
+      //run after applet.popover.show all
+      for(int i = 0; i<listbax.length; i++){
+        listbax.index(i).hide();
+      }
+      listbax.index(thiss).show();
     }
     public static void on_search_activate (string name) {
       print (@"\nHello $name!\n\n");
