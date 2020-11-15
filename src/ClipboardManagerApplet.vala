@@ -177,7 +177,9 @@ namespace ClipboardManagerApplet {
     public static Image indicatorIcon;
     public static Clipboard clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD);
     public static Box mainContent = new Box(Gtk.Orientation.VERTICAL, 0);
+    public static Box search_container = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
     public static Entry search_box = new Gtk.Entry ();
+    public static Button search_btn;
     public static Box scrbox = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
     public static ListBox realContent = new ListBox();
     public static Box navContainer = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
@@ -212,13 +214,18 @@ namespace ClipboardManagerApplet {
       /* box */
       add(mainContent);
       scrbox.add(realContent);
-      mainContent.add(search_box);
+      mainContent.add(search_container);
       mainContent.add(scrbox);
       mainContent.add(navContainer);
       mainContent.add(setContent);
 
       search_box.set_placeholder_text("Search Clipboard....");
-
+      search_box.set_hexpand(true);
+      search_btn = new Button.from_icon_name("search");
+      search_btn.clicked.connect(()=>on_search_activate(search_box));
+      search_container.add(search_box);
+      search_container.add(search_btn);
+      
       string settitext = "-------------------------------------";
       Label setMgrLabel = new Label(@"$settitext");
       setContent.add(setMgrLabel);      
@@ -256,7 +263,6 @@ namespace ClipboardManagerApplet {
       if (ttype >=0 && ttype <=1 || ttyped==1){
         realContent.destroy();
         scrbox.add(realContent);
-        search_box.preedit_changed.connect (on_search_activate);
         if (!row_activated_flag){
           for (int j = 0; j < history.length; j++){
             if(text == history.index(j)){
@@ -318,7 +324,6 @@ namespace ClipboardManagerApplet {
           Label clipMgrLabel = new Label(text);
           listbax.index(0).add(clipMgrLabel);
         }
-        print(@"\nList Box(addRpw) length is $(listbax.length)\n");
         nav_visible();
         for(int i = 0; i<listbax.length; i++){
           realContent.add(listbax.index(i));
@@ -339,9 +344,6 @@ namespace ClipboardManagerApplet {
         string text = "Clipboard is Currently Empty!";
         Label currLabel = new Label(text);
         realContent.add(currLabel);
-        for (int i = 0; i < history.length ; i++) {
-          print ("%s\n", history.index (i));
-        }
         update_pager();
       }
     }
@@ -410,8 +412,14 @@ namespace ClipboardManagerApplet {
       }
       listbax.index(thiss).show();
     }
-    public static void on_search_activate (string name) {
-      print (@"\nHello $name!\n\n");
+    public static void on_search_activate (Gtk.Entry entry) {
+      string gotText = entry.get_text();
+      print (@"\n\nSearch term : $gotText!\n\n");
+      for (int i=0;i<history.length;i++){
+        if (history.index(i).contains(gotText)){
+          print(@"Got this : $(history.index(i))\n\n");
+        }
+      }
     }
     public static void __on_row_activated(int copy){
       row_activated_flag = true;
