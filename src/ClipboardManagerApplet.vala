@@ -20,22 +20,28 @@ using Gtk;
   private static Gtk.Clipboard monitor_clipboard_selection;
 
   public static bool attach_monitor_clipboard() {
-      monitor_clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
-      monitor_clipboard.owner_change.connect ((ev) => {
+    monitor_clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
+    monitor_clipboard.owner_change.connect ((ev) => {
+        Array<string> history = ClipboardManagerApplet.ClipboardManagerPopover.history;
         string text = get_clipboard_text();
         if (text.strip().length != 0 && text != null){
-          if( text !=ClipboardManagerApplet.ClipboardManagerPopover.history.index(0)){
+          if( text !=history.index(0)){
             ClipboardManagerApplet.ClipboardManagerPopover.addRow(0);
         }}
       });
       monitor_clipboard_selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
       monitor_clipboard_selection.owner_change.connect ((ev) => {
+        Array<string> history = ClipboardManagerApplet.ClipboardManagerPopover.history;
         bool select_clip = ClipboardManagerApplet.Applet.setting.get_boolean("selectclip");
         string text = get_selected_text();
         if (select_clip && text != null && text.strip().length != 0 ){
-          if( text !=ClipboardManagerApplet.ClipboardManagerPopover.history.index(0)){
-          ClipboardManagerApplet.ClipboardManagerPopover.addRow(1);
-        }}
+          if(text.contains(history.index(0))){
+            history.remove_index(0);
+          }
+          if( text !=history.index(0)){
+            ClipboardManagerApplet.ClipboardManagerPopover.addRow(1);
+          }
+        }
       });
       return false;
   }
@@ -232,7 +238,9 @@ namespace ClipboardManagerApplet {
 
     public static void addRow(int ttype){
       pageNav = 0;
-      currPage =1;
+      if (!row_activated_flag){
+        currPage =1;
+      }
       listbax = new Array<Gtk.ListBox>();
       text = ClipboardManager.get_clipboard_text();
       if (ttype==0) { text = ClipboardManager.get_clipboard_text(); } 
