@@ -345,6 +345,7 @@ namespace ClipboardManagerApplet {
         prvNavLabel.set_hexpand (true);
         Label pageNo = new Gtk.Label(@"$currPage/$pageNav");
         pageNo.set_halign (Gtk.Align.CENTER);
+        pageNo.set_hexpand (true);
         Label nxtNavLabel = new Gtk.Label("⟶");
         Button nxtBtn = new Button();
         prvBtn.clicked.connect(()=>{
