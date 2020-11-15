@@ -23,6 +23,12 @@
             <default>10</default>   
             <range min="2" max="100" />
         </key>
+        <key type="i" name="pagesize">
+            <summary>Max page size</summary>
+            <description>Maximum number of clips one page can hold.</description>
+            <default>10</default>   
+            <range min="2" max="100" />
+        </key>
     </schema>
 </schemalist>
 

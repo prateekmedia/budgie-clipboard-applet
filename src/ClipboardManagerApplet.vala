@@ -24,16 +24,18 @@ using Gtk;
       monitor_clipboard.owner_change.connect ((ev) => {
         string text = get_clipboard_text();
         if (text.strip().length != 0 && text != null){
-          ClipboardManagerApplet.ClipboardManagerPopover.addRow(0);
-        }
+          if( text !=ClipboardManagerApplet.ClipboardManagerPopover.history.index(0)){
+            ClipboardManagerApplet.ClipboardManagerPopover.addRow(0);
+        }}
       });
       monitor_clipboard_selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
       monitor_clipboard_selection.owner_change.connect ((ev) => {
         bool select_clip = ClipboardManagerApplet.Applet.setting.get_boolean("selectclip");
         string text = get_selected_text();
         if (select_clip && text != null && text.strip().length != 0 ){
+          if( text !=ClipboardManagerApplet.ClipboardManagerPopover.history.index(0)){
           ClipboardManagerApplet.ClipboardManagerPopover.addRow(1);
-        }
+        }}
       });
       return false;
   }
@@ -67,7 +69,6 @@ namespace ClipboardManagerApplet {
         // Gtk stuff, widgets etc. here
 
         //History Label
-      //  copyselected =  Applet.setting.get_boolean("copyselected");
         Label historyLabel = new Gtk.Label("History Size");
         historyLabel.set_halign (Gtk.Align.START);
         historyLabel.set_hexpand (true);
@@ -98,12 +99,23 @@ namespace ClipboardManagerApplet {
         copySelTggle.set_halign (Gtk.Align.END);
         copySelTggle.set_hexpand (true);
 
+        //Page Size Label
+        Label pgeSizeLabel = new Gtk.Label("Page Size");
+        pgeSizeLabel.set_halign (Gtk.Align.START);
+        pgeSizeLabel.set_hexpand (true);
+        SpinButton pgeSizeSpin = new Gtk.SpinButton.with_range (2, 100, 1);
+        pgeSizeSpin.set_value(settings.get_int("pagesize"));
+        pgeSizeSpin.set_halign (Gtk.Align.END);
+        pgeSizeSpin.set_hexpand (true);
+
         attach (historyLabel,   0, 0, 1, 1);
         attach (historySpin,    1, 0, 1, 1);
         attach (selClipLabel,   0, 1, 1, 1);
         attach (selClipTggle,   1, 1, 1, 1);
         attach (copySelLabel,   0, 2, 1, 1);
         attach (copySelTggle,   1, 2, 1, 1);
+        attach (pgeSizeLabel,   0, 3, 1, 1);
+        attach (pgeSizeSpin,    1, 3, 1, 1);
 
         historySpin.value_changed.connect (()=>{
           int curr_val = historySpin.get_value_as_int();
@@ -133,6 +145,16 @@ namespace ClipboardManagerApplet {
           settings.set_boolean("copyselected" , curr_act);
           ClipboardManagerPopover.copyselected = curr_act;
           return false;
+        });
+
+        pgeSizeSpin.value_changed.connect (()=>{
+          int curr_val = pgeSizeSpin.get_value_as_int();
+          if(ClipboardManagerPopover.maxPageitems != curr_val){
+            settings.set_int("pagesize" , curr_val);
+            ClipboardManagerPopover.maxPageitems = curr_val;
+            Applet.popover.get_child().show_all();
+
+          }
         });
     }
   }
@@ -165,7 +187,7 @@ namespace ClipboardManagerApplet {
     public static bool row_activated_flag = false;
     public static int idx;
     public static int pageNav = 0;
-    public const int maxPageitems = 10;
+    public static int maxPageitems = Applet.setting.get_int("pagesize");
     public static int currPage = 1;
     public static int ttyped = 0;
     public static int specialMark = 0;
@@ -223,67 +245,66 @@ namespace ClipboardManagerApplet {
         }
        } 
       else { text = ""; }
-      if (history.index (0) != text || specialMark == 0){
-        if (ttype >=0 && ttype <=1 || ttyped==1){
-          realContent.destroy();
-          scrbox.add(realContent);
-          search_box.preedit_changed.connect (on_search_activate);
-          if (!row_activated_flag){
-            for (int j = 0; j < history.length; j++){
-              if(text == history.index(j)){
-                history.remove_index(j);
-                break;
-              }
+      if (ttype >=0 && ttype <=1 || ttyped==1){
+        realContent.destroy();
+        scrbox.add(realContent);
+        search_box.preedit_changed.connect (on_search_activate);
+        if (!row_activated_flag){
+          for (int j = 0; j < history.length; j++){
+            if(text == history.index(j)){
+              history.remove_index(j);
+              break;
             }
-            update_history(text);
-            specialMark = 0;
           }
-          if (copyselected && ttype ==1){
-            ClipboardManager.set_text(text);
+          update_history(text);
+          specialMark = 0;
+        }
+        if (copyselected && ttype ==1){
+          ClipboardManager.set_text(text);
+        }
+        row_activated_flag = false;
+        if (history.length ==1){
+          indicatorIcon.set_from_icon_name("clipboard-text-outline-symbolic", Gtk.IconSize.MENU);
+        }
+        for (int j = 0; j < history.length; j++) {
+          if(j%maxPageitems == 0){
+            pageNav+=1;
+            listbax.append_val(new Gtk.ListBox());
           }
-          row_activated_flag = false;
-          if (history.length ==1){
-            indicatorIcon.set_from_icon_name("clipboard-text-outline-symbolic", Gtk.IconSize.MENU);
+          text = history.index(j);
+          text = text.replace("\n", " ").strip();
+          if (text.length >30){
+            text = text.substring(0,30) + "...";
           }
-          for (int j = 0; j < history.length; j++) {
-            if(j%maxPageitems == 0){
-              pageNav+=1;
-              listbax.append_val(new Gtk.ListBox());
-            }
-            text = history.index(j);
-            text = text.replace("\n", " ").strip();
-            if (text.length >30){
-              text = text.substring(0,30) + "...";
-            }
-            int copy = j;
-            Box btnlist = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
-            Box thislist = btnlist;
-            Button clipMgr = new Button();
-            Button dismissbtn = new Button();
-            Label dissLabel = new Label("X");
-            dismissbtn.add(dissLabel);
-            Label clipMgrLabel = new Label(text);
-            if (specialMark ==j){
-              clipMgrLabel.set_label(@"<i><b><u>$text</u></b></i>");
-              clipMgrLabel.use_markup = true;
-            }
-            clipMgrLabel.set_xalign(0);
-            clipMgr.add(clipMgrLabel);
-            clipMgr.set_hexpand(true);
-            print(@"$j =>  $(history.index (j)) \n");
-            rows.append_val(text);
-            dismissbtn.clicked.connect(()=>{
-              thislist.destroy();
-              history.remove_index (copy);
-              update_pager();
-              nav_visible();
-              Applet.popover.get_child().show_all();
-            });
-            clipMgr.clicked.connect(()=>__on_row_activated(copy));
-            btnlist.add(clipMgr);
-            btnlist.add(dismissbtn);
-            listbax.index(pageNav-1).add(btnlist);
+          int copy = j;
+          Box btnlist = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+          Box thislist = btnlist;
+          Button clipMgr = new Button();
+          Button dismissbtn = new Button();
+          Label dissLabel = new Label("X");
+          dismissbtn.add(dissLabel);
+          Label clipMgrLabel = new Label(text);
+          if (specialMark ==j){
+            clipMgrLabel.set_label(@"<i><b><u>$text</u></b></i>");
+            clipMgrLabel.use_markup = true;
           }
+          clipMgrLabel.set_xalign(0);
+          clipMgr.add(clipMgrLabel);
+          clipMgr.set_hexpand(true);
+          print(@"$j =>  $(history.index (j)) \n");
+          rows.append_val(text);
+          dismissbtn.clicked.connect(()=>{
+            thislist.destroy();
+            history.remove_index (copy);
+            update_pager();
+            nav_visible();
+            Applet.popover.get_child().show_all();
+          });
+          clipMgr.clicked.connect(()=>__on_row_activated(copy));
+          btnlist.add(clipMgr);
+          btnlist.add(dismissbtn);
+          listbax.index(pageNav-1).add(btnlist);
+        }
         } else {
           listbax.append_val(new Gtk.ListBox());
           Label clipMgrLabel = new Label(text);
@@ -297,7 +318,6 @@ namespace ClipboardManagerApplet {
         update_pager();
         Applet.popover.get_child().show_all();
         hide_all_listbax_but_show(currPage - 1);
-      }
     }
 
     public static void remove_row(){
