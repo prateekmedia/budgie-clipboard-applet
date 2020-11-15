@@ -161,6 +161,7 @@ namespace ClipboardManagerApplet {
     public static bool row_activated_flag = false;
     public static int idx;
     public static int pageNav = 0;
+    public static int currPage = 1;
     public static int ttyped = 0;
     public static int specialMark = 0;
     /* process stuff */
@@ -205,6 +206,7 @@ namespace ClipboardManagerApplet {
     public static void addRow(int ttype){
       listbax = new Array<Gtk.ListBox>();
       pageNav = 0;
+      currPage =1;
       text = ClipboardManager.get_clipboard_text();
       if (ttype==0) { text = ClipboardManager.get_clipboard_text(); } 
       else if (ttype ==1 ) { text = ClipboardManager.get_selected_text(); } 
@@ -286,7 +288,7 @@ namespace ClipboardManagerApplet {
             listbax.index(0).add(clipMgrLabel);
           }
           nav_visible();
-          realContent.add(listbax.index(0));
+          realContent.add(listbax.index(currPage-1));
           update_pager();
           Applet.popover.get_child().show_all();
         }
@@ -334,13 +336,30 @@ namespace ClipboardManagerApplet {
         navContainer.add(navbox);
         Label prvNavLabel = new Gtk.Label("⟵");
         Button prvBtn = new Button();
-        //  prvBtn.clicked.connect(remove_row);
         prvNavLabel.set_halign (Gtk.Align.CENTER);
         prvNavLabel.set_hexpand (true);
-        Label pageNo = new Gtk.Label(@"1/$pageNav");
+        Label pageNo = new Gtk.Label(@"$currPage/$pageNav");
         pageNo.set_halign (Gtk.Align.CENTER);
         Label nxtNavLabel = new Gtk.Label("⟶");
         Button nxtBtn = new Button();
+        prvBtn.clicked.connect(()=>{
+          if (currPage >1){
+          realContent.destroy();
+          scrbox.add(realContent);
+          currPage-=1;
+          realContent.add(listbax.index(currPage-1));
+          pageNo.set_label(@"$currPage/$pageNav");
+          Applet.popover.get_child().show_all();
+        }});
+        nxtBtn.clicked.connect(()=>{
+          if (currPage < listbax.length){
+          realContent.destroy();
+          scrbox.add(realContent);
+          currPage+=1;
+          realContent.add(listbax.index(currPage-1));
+          pageNo.set_label(@"$currPage/$pageNav");
+          Applet.popover.get_child().show_all();
+        }});
         nxtNavLabel.set_halign (Gtk.Align.CENTER);
         nxtNavLabel.set_hexpand (true);
 
