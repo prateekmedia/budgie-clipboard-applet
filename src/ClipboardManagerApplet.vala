@@ -254,7 +254,7 @@ namespace ClipboardManagerApplet {
       pager.set_halign (Gtk.Align.CENTER);
       setContent.prepend(pager);
       
-      Label editModeLabel = new Gtk.Label("Edit Mode");
+      Label editModeLabel = new Gtk.Label("   Edit Mode");
       editModeLabel.set_halign (Gtk.Align.START);
       editModeLabel.set_hexpand (true);
       Switch editModeTggle = new Gtk.Switch();
@@ -274,7 +274,7 @@ namespace ClipboardManagerApplet {
 
       setContent.add(editMode);
 
-      Label privateModeLabel = new Gtk.Label("Private Mode");
+      Label privateModeLabel = new Gtk.Label("   Private Mode");
       privateModeLabel.set_halign (Gtk.Align.START);
       privateModeLabel.set_hexpand (true);
       Switch privateModeTggle = new Gtk.Switch();
