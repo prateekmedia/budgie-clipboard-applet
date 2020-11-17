@@ -185,6 +185,7 @@ namespace ClipboardManagerApplet {
     public static Button search_btn;
     public static Box scrbox = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
     public static ListBox realContent = new ListBox();
+    public static Box spacerCont = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
     public static Box navContainer = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
     public static Box navbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
     public static Box editMode = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
@@ -223,6 +224,7 @@ namespace ClipboardManagerApplet {
       scrbox.add(realContent);
       mainContent.add(search_container);
       mainContent.add(scrbox);
+      mainContent.add(spacerCont);
       mainContent.add(navContainer);
       mainContent.add(setContent);
 
@@ -237,9 +239,9 @@ namespace ClipboardManagerApplet {
       search_container.add(search_box);
       search_container.add(search_btn);
       
-      string settitext = "-------------------------------------";
-      Label setMgrLabel = new Label(@"$settitext");
-      setContent.add(setMgrLabel);      
+      string spacerText = "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^";
+      Label spacerLabel = new Label(@"$spacerText");
+      spacerCont.add(spacerLabel);      
 
       string emptyCliptext = "Empty Clipboard ";
       Button emptyClip = new Button();
