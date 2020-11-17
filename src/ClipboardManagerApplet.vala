@@ -22,15 +22,17 @@ using Gtk;
   public static bool attach_monitor_clipboard() {
     monitor_clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
     monitor_clipboard.owner_change.connect ((ev) => {
+        if(!ClipboardManagerApplet.ClipboardManagerPopover.primode){
         Array<string> history = ClipboardManagerApplet.ClipboardManagerPopover.history;
         string text = get_clipboard_text();
         if (text.strip().length != 0 && text != null){
           if( text !=history.index(0)){
             ClipboardManagerApplet.ClipboardManagerPopover.addRow(0);
-        }}
+        }}}
       });
       monitor_clipboard_selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
       monitor_clipboard_selection.owner_change.connect ((ev) => {
+        if(!ClipboardManagerApplet.ClipboardManagerPopover.primode){
         Array<string> history = ClipboardManagerApplet.ClipboardManagerPopover.history;
         bool select_clip = ClipboardManagerApplet.Applet.settings.get_boolean("selectclip");
         string text = get_selected_text();
@@ -41,7 +43,7 @@ using Gtk;
           if( text !=history.index(0)){
             ClipboardManagerApplet.ClipboardManagerPopover.addRow(1);
           }
-        }
+        }}
       });
       return false;
   }
@@ -186,7 +188,9 @@ namespace ClipboardManagerApplet {
     public static Box navContainer = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
     public static Box navbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
     public static Box editMode = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
+    public static Box privateMode = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
     public static bool edMode = settings.get_boolean("editmode");
+    public static bool primode = settings.get_boolean("privatemode");
     public static ListBox setContent = new ListBox();
     public static Label pager = new Gtk.Label(null);
     public static string text;
@@ -195,6 +199,7 @@ namespace ClipboardManagerApplet {
     public static Array<string> history = new Array<string> ();
     public static Array<Gtk.ListBox> listbax = new Array<Gtk.ListBox> ();
     public static bool row_activated_flag = false;
+    public static bool private_mode = false;
     public static int idx;
     public static int pageNav = 0;
     public static int maxPageitems = settings.get_int("pagesize");
@@ -268,6 +273,25 @@ namespace ClipboardManagerApplet {
       editMode.add(editModeTggle);
 
       setContent.add(editMode);
+
+      Label privateModeLabel = new Gtk.Label("Private Mode");
+      privateModeLabel.set_halign (Gtk.Align.START);
+      privateModeLabel.set_hexpand (true);
+      Switch privateModeTggle = new Gtk.Switch();
+      privateModeTggle.set_active(settings.get_boolean("privatemode"));
+      privateModeTggle.set_halign (Gtk.Align.END);
+      privateModeTggle.set_hexpand (true);
+
+      privateModeTggle.state_set.connect (()=>{
+        bool curr_act = privateModeTggle.get_active();
+        settings.set_boolean("privatemode" , curr_act);
+        primode = curr_act;
+        return false;
+      });
+
+      privateMode.add(privateModeLabel);
+      privateMode.add(privateModeTggle);
+      setContent.add(privateMode);
     }
 
     public static void addRow(int ttype){

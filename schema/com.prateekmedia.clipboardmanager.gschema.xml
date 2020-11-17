@@ -28,6 +28,11 @@
             <description>If true this will display X button after every Clip.</description>
             <default>false</default>
         </key>
+        <key type="b" name="privatemode">
+            <summary>Doesnt copy clips to clipboard</summary>
+            <description>If true this prevent copying any Clip.</description>
+            <default>false</default>
+        </key>
         <key type="i" name="pagesize">
             <summary>Max page size</summary>
             <description>Maximum number of clips one page can hold.</description>
