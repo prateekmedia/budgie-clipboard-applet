@@ -71,7 +71,6 @@ namespace ClipboardManagerApplet {
 
   public class ClipboardManagerSettings: Gtk.Grid {
     /* Budgie Settings -section */
-    //  GLib.Settings ? settings = null
 
     public ClipboardManagerSettings(GLib.Settings? settings) {
         // Gtk stuff, widgets etc. here
@@ -116,6 +115,15 @@ namespace ClipboardManagerApplet {
         pgeSizeSpin.set_halign (Gtk.Align.END);
         pgeSizeSpin.set_hexpand (true);
 
+        //Mininal Interface
+        Label minIntLabel = new Gtk.Label("Minimal Interface(Requires Logout)");
+        minIntLabel.set_halign (Gtk.Align.START);
+        minIntLabel.set_hexpand (true);
+        Switch minIntTggle = new Gtk.Switch();
+        minIntTggle.set_active(settings.get_boolean("minimalinterface"));
+        minIntTggle.set_halign (Gtk.Align.END);
+        minIntTggle.set_hexpand (true);
+
         attach (historyLabel,   0, 0, 1, 1);
         attach (historySpin,    1, 0, 1, 1);
         attach (selClipLabel,   0, 1, 1, 1);
@@ -124,6 +132,8 @@ namespace ClipboardManagerApplet {
         attach (copySelTggle,   1, 2, 1, 1);
         attach (pgeSizeLabel,   0, 3, 1, 1);
         attach (pgeSizeSpin,    1, 3, 1, 1);
+        attach (minIntLabel,    0, 4, 1, 1);
+        attach (minIntTggle,    1, 4, 1, 1);
 
         historySpin.value_changed.connect (()=>{
           int curr_val = historySpin.get_value_as_int();
@@ -132,7 +142,6 @@ namespace ClipboardManagerApplet {
             ClipboardManagerPopover.HISTORY_LENGTH = curr_val;
             ClipboardManagerPopover.update_pager();
             Applet.popover.get_child().show_all();
-            //  ClipboardManagerPopover.nav_visible();
 
           }
         });
@@ -164,6 +173,12 @@ namespace ClipboardManagerApplet {
 
           }
         });
+
+        minIntTggle.state_set.connect (()=>{
+          bool curr_act = minIntTggle.get_active();
+          settings.set_boolean("minimalinterface" , curr_act);
+          return false;
+        });
     }
   }
 
@@ -186,7 +201,7 @@ namespace ClipboardManagerApplet {
     public static Box scrbox = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
     public static ListBox realContent = new ListBox();
     public static Box space = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
-    public static Box spacerCont = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
+    public static ListBox spacerCont = new Gtk.ListBox ();
     public static Box navContainer = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
     public static Box navbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
     public static Box editMode = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
@@ -197,6 +212,7 @@ namespace ClipboardManagerApplet {
     public static Label pager = new Gtk.Label(null);
     public static string text;
     public static bool copyselected =  settings.get_boolean("copyselected");
+    public static bool minimalinterface =  settings.get_boolean("minimalinterface");
     public static int HISTORY_LENGTH = settings.get_int("historylength");
     public static Array<string> history = new Array<string> ();
     public static Array<Gtk.ListBox> listbax = new Array<Gtk.ListBox> ();
@@ -223,13 +239,20 @@ namespace ClipboardManagerApplet {
       /* box */
       add(mainContent);
       scrbox.add(realContent);
-      mainContent.add(search_container);
-      mainContent.add(space);
-      mainContent.add(scrbox);
-      mainContent.add(spacerCont);
-      mainContent.add(navContainer);
-      mainContent.add(setContent);
+      if (!minimalinterface){
+        mainContent.add(search_container);
+        mainContent.add(space);
+        mainContent.add(scrbox);
+        mainContent.add(spacerCont);
+        mainContent.add(navContainer);
+        mainContent.add(setContent);
+      }
+      else {
+        mainContent.add(scrbox);
+        mainContent.add(navContainer);
+        mainContent.add(search_container);
 
+      }
       search_box.set_placeholder_text("Search Clipboard....");
       search_box.set_hexpand(true);
       search_btn = new Button.from_icon_name("search");
@@ -481,7 +504,7 @@ namespace ClipboardManagerApplet {
       currPage =1;
       listbax = new Array<Gtk.ListBox>();
       listbax.append_val(new Gtk.ListBox());
-      Button goBackBtn = new Gtk.Button.with_label("Go Back");
+      Button goBackBtn = new Gtk.Button.with_label("<-  Go Back    ");
       goBackBtn.clicked.connect(()=>{
         addRow(0);
         entry.set_text("");
@@ -504,9 +527,13 @@ namespace ClipboardManagerApplet {
         listbax.index(0).add(new Label("No Results found!"));
       }
       nav_visible();
-      realContent.add(goBackBtn);
       for(int i = 0; i<listbax.length; i++){
         realContent.add(listbax.index(i));
+      }
+      if (minimalinterface){
+        realContent.add(goBackBtn);
+      } else {
+        realContent.prepend(goBackBtn);
       }
       update_pager();
       Applet.popover.get_child().show_all();

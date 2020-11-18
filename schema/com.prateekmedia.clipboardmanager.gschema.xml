@@ -17,11 +17,19 @@
             <description>This will tell applet whether to automatically copy selection to clipboard or not.</description>
             <default>false</default>
         </key>
+        <key type="b" name="minimalinterface">
+            <summary>Shows Minimal Interface</summary>
+            <description>If true this will disable all unnecessary options in clipboar manager.</description>
+            <default>false</default>
+        </key>
         <key type="i" name="historylength">
             <summary>History Length</summary>
             <description>Maximum number of clips history can hold.</description>
             <default>10</default>   
             <range min="2" max="100" />
+        </key>
+        <key name="history" type="as">
+            <default>[]</default>
         </key>
         <key type="b" name="editmode">
             <summary>Make elements dismissable</summary>
