@@ -246,83 +246,83 @@ namespace ClipboardManagerApplet {
         mainContent.add(spacerCont);
         mainContent.add(navContainer);
         mainContent.add(setContent);
+        
+        string spaceT = "                                     ";
+        Label spaceLab = new Label(@"$spaceT");
+        space.add(spaceLab);      
+
+        string spacerText = "-------------------------------------";
+        Label spacerLabel = new Label(@"$spacerText");
+        spacerCont.add(spacerLabel);      
+  
+        string emptyCliptext = "Empty Clipboard ";
+        Button emptyClip = new Button();
+        emptyClip.clicked.connect(remove_row);
+        Label emptyClipLabel = new Label(@"<b>$emptyCliptext</b>");
+        emptyClipLabel.set_xalign(0);
+        emptyClipLabel.use_markup = true;
+        emptyClip.add(emptyClipLabel);
+        setContent.add(emptyClip);
+  
+        pager.set_label(@"$(history.length)/$HISTORY_LENGTH");
+        pager.set_halign (Gtk.Align.CENTER);
+        setContent.prepend(pager);
+        
+        Label editModeLabel = new Gtk.Label("   Edit Mode");
+        editModeLabel.set_halign (Gtk.Align.START);
+        editModeLabel.set_hexpand (true);
+        Switch editModeTggle = new Gtk.Switch();
+        editModeTggle.set_active(settings.get_boolean("editmode"));
+        editModeTggle.set_halign (Gtk.Align.END);
+        editModeTggle.set_hexpand (true);
+  
+        editModeTggle.state_set.connect (()=>{
+          bool curr_act = editModeTggle.get_active();
+          settings.set_boolean("editmode" , curr_act);
+          edMode = curr_act;
+          return false;
+        });
+  
+        editMode.add(editModeLabel);
+        editMode.add(editModeTggle);
+  
+        setContent.add(editMode);
+  
+        Label privateModeLabel = new Gtk.Label("   Private Mode");
+        privateModeLabel.set_halign (Gtk.Align.START);
+        privateModeLabel.set_hexpand (true);
+        Switch privateModeTggle = new Gtk.Switch();
+        privateModeTggle.set_active(settings.get_boolean("privatemode"));
+        privateModeTggle.set_halign (Gtk.Align.END);
+        privateModeTggle.set_hexpand (true);
+  
+        privateModeTggle.state_set.connect (()=>{
+          bool curr_act = privateModeTggle.get_active();
+          settings.set_boolean("privatemode" , curr_act);
+          primode = curr_act;
+          return false;
+        });
+  
+        privateMode.add(privateModeLabel);
+        privateMode.add(privateModeTggle);
+        setContent.add(privateMode);
       }
       else {
+        mainContent.add(search_container);
         mainContent.add(scrbox);
         mainContent.add(navContainer);
-        mainContent.add(search_container);
+      }   
 
-      }
       search_box.set_placeholder_text("Search Clipboard....");
       search_box.set_hexpand(true);
       search_btn = new Button.from_icon_name("search");
       search_btn.clicked.connect(()=>{
         text = search_box.get_text();
-        if (text.strip().length != 0 && text != null){
+        if (text != null && text.strip().length != 0 && history.length !=0){
           on_search_activate(search_box);
         }});
       search_container.add(search_box);
       search_container.add(search_btn);
-
-      string spaceT = "                                     ";
-      Label spaceLab = new Label(@"$spaceT");
-      space.add(spaceLab);      
-      
-      string spacerText = "-------------------------------------";
-      Label spacerLabel = new Label(@"$spacerText");
-      spacerCont.add(spacerLabel);      
-
-      string emptyCliptext = "Empty Clipboard ";
-      Button emptyClip = new Button();
-      emptyClip.clicked.connect(remove_row);
-      Label emptyClipLabel = new Label(@"<b>$emptyCliptext</b>");
-      emptyClipLabel.set_xalign(0);
-      emptyClipLabel.use_markup = true;
-      emptyClip.add(emptyClipLabel);
-      setContent.add(emptyClip);
-
-      pager.set_label(@"$(history.length)/$HISTORY_LENGTH");
-      pager.set_halign (Gtk.Align.CENTER);
-      setContent.prepend(pager);
-      
-      Label editModeLabel = new Gtk.Label("   Edit Mode");
-      editModeLabel.set_halign (Gtk.Align.START);
-      editModeLabel.set_hexpand (true);
-      Switch editModeTggle = new Gtk.Switch();
-      editModeTggle.set_active(settings.get_boolean("editmode"));
-      editModeTggle.set_halign (Gtk.Align.END);
-      editModeTggle.set_hexpand (true);
-
-      editModeTggle.state_set.connect (()=>{
-        bool curr_act = editModeTggle.get_active();
-        settings.set_boolean("editmode" , curr_act);
-        edMode = curr_act;
-        return false;
-      });
-
-      editMode.add(editModeLabel);
-      editMode.add(editModeTggle);
-
-      setContent.add(editMode);
-
-      Label privateModeLabel = new Gtk.Label("   Private Mode");
-      privateModeLabel.set_halign (Gtk.Align.START);
-      privateModeLabel.set_hexpand (true);
-      Switch privateModeTggle = new Gtk.Switch();
-      privateModeTggle.set_active(settings.get_boolean("privatemode"));
-      privateModeTggle.set_halign (Gtk.Align.END);
-      privateModeTggle.set_hexpand (true);
-
-      privateModeTggle.state_set.connect (()=>{
-        bool curr_act = privateModeTggle.get_active();
-        settings.set_boolean("privatemode" , curr_act);
-        primode = curr_act;
-        return false;
-      });
-
-      privateMode.add(privateModeLabel);
-      privateMode.add(privateModeTggle);
-      setContent.add(privateMode);
     }
 
     public static void addRow(int ttype){
