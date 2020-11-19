@@ -61,7 +61,7 @@ using Gtk;
   }
   public static void set_text (string? item) {
       var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
-      if (item != clipboard.wait_for_text ()){
+      if (item != null &&item != clipboard.wait_for_text ()){
         clipboard.set_text (item, item.length);
       }
   }
