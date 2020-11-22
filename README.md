@@ -9,20 +9,32 @@ A clipboard manager applet that can help you to store and manage clipboard conte
 
 ### *For Solus* 
 
-- `sudo eopkg it budgie-desktop-devel meson vala -c system.devel`
+```
+$ sudo eopkg it budgie-desktop-devel meson vala -c system.devel
+```
 
 ### *For Debian/ Ubuntu or its Derivatives* 
 
-- `sudo apt install budgie-core-dev libglib2.0-dev libgtk-3-dev libpeas-dev meson valac`
+```
+$ sudo apt install budgie-core-dev libglib2.0-dev libgtk-3-dev libpeas-dev meson valac
+```
 
 ### *For Arch or its Derivatives*
-- `sudo pacman -S budgie-desktop libpeas intltool meson vala`
+```
+$ sudo pacman -S budgie-desktop libpeas intltool meson vala
+```
 
 ## Building from source
 Download the zip & then run from the repo's folder:
 
-- `mkdir build && cd build`
+```
+$ mkdir build && cd build
+```
 
-- `meson --buildtype plain --prefix=/usr --libdir=/usr/lib`
+```
+$ meson --buildtype plain --prefix=/usr --libdir=/usr/lib
+```
 
-- `sudo ninja install`
+```
+$ sudo ninja install
+```
