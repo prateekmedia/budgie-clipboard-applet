@@ -1,9 +1,15 @@
 <p align="center"><a href="#budgie-clipboard-manager"><img src="https://raw.githubusercontent.com/prateekmedia/budgie-clipboard-applet/main/clipmgr-darkicon.png" height=80px alt="NSS Logo"/></a></p>
 <h1 align="center">Budgie Clipboard Manager</h1>
+<p align="center"><b>Version - 0.8</b></p>
 A clipboard manager applet that can help you to store and manage clipboard content on the Budgie desktop, Written using Vala.  
-  
-  
-**To debug the applet type `budgie-panel --replace &!` on the terminal**  
+
+**To debug the applet use below command**   
+```
+$ budgie-panel --replace &!
+```
+
+## CONTRIBUTION
+-  Pull requests are welcome that solve [TODO](#todo) or add any useful feature / solves any bug
   
 ## Dependencies for Building from source
 
@@ -38,3 +44,7 @@ $ meson --buildtype plain --prefix=/usr --libdir=/usr/lib
 ```
 $ sudo ninja install
 ```
+
+## TODO
+- [ ] Use [escape_text](https://valadoc.org/glib-2.0/GLib.Markup.escape_text.html) when text is selected
+- [ ] Solve [Issues](https://github.com/prateekmedia/budgie-clipboard-applet/issues)
