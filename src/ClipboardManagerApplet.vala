@@ -283,6 +283,7 @@ namespace ClipboardManagerApplet {
           return false;
         });
   
+        editMode.set_tooltip_text("Enabling this will add Cross icon to delete Clipboard Contents");
         editMode.add(editModeLabel);
         editMode.add(editModeTggle);
   
@@ -303,6 +304,7 @@ namespace ClipboardManagerApplet {
           return false;
         });
   
+        privateMode.set_tooltip_text("Enabling this will stop Clipboard Manager to save any Clips");
         privateMode.add(privateModeLabel);
         privateMode.add(privateModeTggle);
         setContent.add(privateMode);
@@ -418,7 +420,7 @@ namespace ClipboardManagerApplet {
       clipMgrLabel.set_xalign(0);
       clipMgr.add(clipMgrLabel);
       clipMgr.set_hexpand(true);
-      print(@"$j =>  $(history.index (j)) \n");
+      // print(@"$j =>  $(history.index (j)) \n");
       clipMgr.clicked.connect(()=>__on_row_activated(copy));
       btnlist.add(clipMgr);
       if (edMode){
