@@ -499,11 +499,6 @@ namespace ClipboardManagerApplet {
       currPage =1;
       listbax = new Array<Gtk.ListBox>();
       listbax.append_val(new Gtk.ListBox());
-      Button goBackBtn = new Gtk.Button.with_label("<-  Go Back    ");
-      goBackBtn.clicked.connect(()=>{
-        addRow(0);
-        entry.set_text("");
-      });
       string gotText = entry.get_text();
       realContent.destroy();
       scrbox.add(realContent);
@@ -524,11 +519,6 @@ namespace ClipboardManagerApplet {
       nav_visible();
       for(int i = 0; i<listbax.length; i++){
         realContent.add(listbax.index(i));
-      }
-      if (minimalinterface){
-        realContent.add(goBackBtn);
-      } else {
-        realContent.prepend(goBackBtn);
       }
       update_pager();
       Applet.popover.get_child().show_all();
