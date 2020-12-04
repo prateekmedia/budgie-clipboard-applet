@@ -199,7 +199,7 @@ namespace ClipboardManagerApplet {
     public static Button search_btn;
     public static Box scrbox = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
     public static ListBox realContent = new ListBox();
-    public static ListBox spacerCont = new Gtk.ListBox ();
+    public static Separator spacerCont = new Gtk.Separator(Gtk.Orientation.HORIZONTAL);
     public static Box navContainer = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
     public static Box navbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
     public static Box editMode = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
@@ -244,11 +244,6 @@ namespace ClipboardManagerApplet {
         mainContent.add(spacerCont);
         mainContent.add(navContainer);
         mainContent.add(setContent);   
-
-        string spacerText = "-------------------------------------";
-        Label spacerLabel = new Label(@"$spacerText");
-        spacerCont.add(spacerLabel);      
-        spacerCont.set_sensitive (false);
   
   	setContent.add(pagerCont);
   	  
