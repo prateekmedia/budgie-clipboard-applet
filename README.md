@@ -46,5 +46,4 @@ $ sudo ninja install
 ```
 
 ## TODO
-- [ ] Use [escape_text](https://valadoc.org/glib-2.0/GLib.Markup.escape_text.html) when text is selected
 - [ ] Solve [Issues](https://github.com/prateekmedia/budgie-clipboard-applet/issues)
