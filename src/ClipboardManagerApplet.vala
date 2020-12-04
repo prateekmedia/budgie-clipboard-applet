@@ -249,7 +249,7 @@ namespace ClipboardManagerApplet {
   	  
         string emptyCliptext = "Empty Clipboard ";
         Button emptyClip = new Button();
-        emptyClip.clicked.connect(remove_row);
+        emptyClip.clicked.connect(remove_all_rows);
         Label emptyClipLabel = new Label(@"<b>$emptyCliptext</b>");
         emptyClipLabel.set_xalign(0);
         emptyClipLabel.use_markup = true;
@@ -258,7 +258,7 @@ namespace ClipboardManagerApplet {
   
         update_pager();
         
-        Label editModeLabel = new Gtk.Label("   Edit Mode");
+        Label editModeLabel = new Gtk.Label("   Edit Mode(Beta)");
         editModeLabel.set_halign (Gtk.Align.START);
         editModeLabel.set_hexpand (true);
         Switch editModeTggle = new Gtk.Switch();
@@ -321,13 +321,13 @@ namespace ClipboardManagerApplet {
       pageNav = 0;
       if (!row_activated_flag){
         currPage =1;
+        text = ClipboardManager.get_clipboard_text();
       }
       listbax = new Array<Gtk.ListBox>();
-      text = ClipboardManager.get_clipboard_text();
       if (ttype==0) { text = ClipboardManager.get_clipboard_text(); } 
       else if (ttype ==1 ) { text = ClipboardManager.get_selected_text(); } 
       else if (ttype ==2) { 
-        if (text == null || text.strip().length ==0){
+        if (history.length == 0 || text == null || text.strip().length ==0){
           text = "Clipboard is Currently Empty!";
         } else {
             ttyped = 1;
@@ -378,7 +378,7 @@ namespace ClipboardManagerApplet {
         hide_all_listbax_but_show(currPage - 1);
     }
 
-    public static void remove_row(){
+    public static void remove_all_rows(){
       if (history.length >0){
         realContent.destroy();
         scrbox.add(realContent); 
@@ -405,7 +405,6 @@ namespace ClipboardManagerApplet {
       }
       int copy = j;
       Box btnlist = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
-      Box thislist = btnlist;
       Button clipMgr = new Button();
       Label clipMgrLabel = new Label(text);
       if (specialMark ==j){
@@ -424,11 +423,10 @@ namespace ClipboardManagerApplet {
         Label dissLabel = new Label("X");
         dismissbtn.add(dissLabel);
           dismissbtn.clicked.connect(()=>{
-            thislist.destroy();
+            realContent.destroy();
             history.remove_index (copy);
-            update_pager();
-            nav_visible();
-            Applet.popover.get_child().show_all();
+            row_activated_flag = true;
+            addRow(2);
           });
         btnlist.add(dismissbtn);
       }
