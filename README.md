@@ -1,7 +1,8 @@
 <p align="center"><a href="#budgie-clipboard-manager"><img src="https://raw.githubusercontent.com/prateekmedia/budgie-clipboard-applet/main/clipmgr-darkicon.png" height=80px alt="NSS Logo"/></a></p>
 <h1 align="center">Budgie Clipboard Manager</h1>
-<p align="center"><b>Version - 0.8.5</b></p>
-A clipboard manager applet that can help you to store and manage clipboard content on the Budgie desktop, Written using Vala.  
+<p align="center"><b>Version - 0.8.9</b></p>
+A clipboard manager applet that can help you to store and manage clipboard content on the Budgie desktop, Written using Vala
+<br>
 
 **To debug the applet use below command**   
 ```
@@ -12,10 +13,10 @@ $ budgie-panel --replace &!
 - [x] Automatically save copied / selected content from clipboard
 - [x] Empty clipboard option
 - [x] Private mode option that let's you copy/select anything without saving it to clipboard
-- [x] Edit mode option that let's you remove any content from Clipboard manager(in Beta)
+- [x] Edit mode option that let's you remove any content from Clipboard manager
 - [x] Save up to 100 Clips
 - [x] Pager Navigation available, so that if clipboard fills out then it will not take the whole screen
-- [x] Search bar that lets you search across all of your clips
+- [x] Search as you type to find the clip that you want
 - [x] Option to enable Minimal Interface for minimalist users
 
 ## CONTRIBUTION
@@ -55,6 +56,13 @@ $ meson --buildtype plain --prefix=/usr --libdir=/usr/lib
 $ sudo ninja install
 ```
 
+## For reinstalling
+
+```
+$ cd build; sudo ninja install
+```
+Likewise the applet can be removed using `sudo ninja uninstall`
+
 ## TODO
-- [ ] Save history to schemas every time a thing is copied to clipboard
+- [ ] Save history to schemas every time a thing is copied to clipboard(using for loop)
 - [ ] Solve [Issues](https://github.com/prateekmedia/budgie-clipboard-applet/issues)
