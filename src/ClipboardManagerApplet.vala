@@ -207,7 +207,7 @@ namespace ClipboardManagerApplet {
     public static bool edMode = settings.get_boolean("editmode");
     public static bool primode = settings.get_boolean("privatemode");
     public static ListBox setContent = new ListBox();
-    public static ListBox pagerCont = new Gtk.ListBox ();
+    public static Button pagerCont = new Gtk.Button ();
     public static Label pager = new Gtk.Label(null);
     public static string text;
     public static bool copyselected =  settings.get_boolean("copyselected");
@@ -258,7 +258,7 @@ namespace ClipboardManagerApplet {
   
         update_pager();
         
-        Label editModeLabel = new Gtk.Label("   Edit Mode(Beta)");
+        Label editModeLabel = new Gtk.Label("   Edit Mode");
         editModeLabel.set_halign (Gtk.Align.START);
         editModeLabel.set_hexpand (true);
         Switch editModeTggle = new Gtk.Switch();
@@ -443,10 +443,7 @@ namespace ClipboardManagerApplet {
       }
     }
     public static void update_pager(){
-      pager.destroy();
-      pager.set_label(@"$(history.length)/$HISTORY_LENGTH");
-      pager.set_halign (Gtk.Align.CENTER);
-      pagerCont.add(pager);
+      pagerCont.set_label(@"$(history.length)/$HISTORY_LENGTH");
       pagerCont.set_sensitive (false);
     }
     public static void nav_visible(){
