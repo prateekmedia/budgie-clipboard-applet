@@ -142,7 +142,6 @@ namespace ClipboardManagerApplet {
             ClipboardManagerPopover.HISTORY_LENGTH = curr_val;
             ClipboardManagerPopover.update_pager();
             Applet.popover.get_child().show_all();
-
           }
         });
 
@@ -209,6 +208,7 @@ namespace ClipboardManagerApplet {
     public static bool edMode = settings.get_boolean("editmode");
     public static bool primode = settings.get_boolean("privatemode");
     public static ListBox setContent = new ListBox();
+    public static ListBox pagerCont = new Gtk.ListBox ();
     public static Label pager = new Gtk.Label(null);
     public static string text;
     public static bool copyselected =  settings.get_boolean("copyselected");
@@ -249,12 +249,16 @@ namespace ClipboardManagerApplet {
         
         string spaceT = "                                     ";
         Label spaceLab = new Label(@"$spaceT");
-        space.add(spaceLab);      
+        space.add(spaceLab);  
+        space.set_sensitive (false);    
 
         string spacerText = "-------------------------------------";
         Label spacerLabel = new Label(@"$spacerText");
         spacerCont.add(spacerLabel);      
+        spacerCont.set_sensitive (false);
   
+  	setContent.add(pagerCont);
+  	  
         string emptyCliptext = "Empty Clipboard ";
         Button emptyClip = new Button();
         emptyClip.clicked.connect(remove_row);
@@ -264,9 +268,7 @@ namespace ClipboardManagerApplet {
         emptyClip.add(emptyClipLabel);
         setContent.add(emptyClip);
   
-        pager.set_label(@"$(history.length)/$HISTORY_LENGTH");
-        pager.set_halign (Gtk.Align.CENTER);
-        setContent.prepend(pager);
+        update_pager();
         
         Label editModeLabel = new Gtk.Label("   Edit Mode");
         editModeLabel.set_halign (Gtk.Align.START);
@@ -374,7 +376,10 @@ namespace ClipboardManagerApplet {
         } else {
           listbax.append_val(new Gtk.ListBox());
           Label clipMgrLabel = new Label(text);
-          listbax.index(0).add(clipMgrLabel);
+          Button clipMgrButton = new Button();
+          clipMgrButton.add(clipMgrLabel);
+          clipMgrButton.set_sensitive (false);
+          listbax.index(0).add(clipMgrButton);
         }
         nav_visible();
         for(int i = 0; i<listbax.length; i++){
@@ -394,8 +399,11 @@ namespace ClipboardManagerApplet {
         Applet.popover.hide();
         ClipboardManager.set_text("");
         string text = "Clipboard is Currently Empty!";
-        Label currLabel = new Label(text);
-        realContent.add(currLabel);
+        Label clipMgrLabel = new Label(text);
+        Button clipMgrButton = new Button();
+        clipMgrButton.add(clipMgrLabel);
+        clipMgrButton.set_sensitive (false);
+        realContent.add(clipMgrButton);
         nav_visible();
         update_pager();
         Applet.popover.get_child().show_all();
@@ -452,7 +460,8 @@ namespace ClipboardManagerApplet {
       pager.destroy();
       pager.set_label(@"$(history.length)/$HISTORY_LENGTH");
       pager.set_halign (Gtk.Align.CENTER);
-      setContent.prepend(pager);
+      pagerCont.add(pager);
+      pagerCont.set_sensitive (false);
     }
     public static void nav_visible(){
       if(pageNav>1 && history.length >maxPageitems){
