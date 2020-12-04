@@ -411,6 +411,7 @@ namespace ClipboardManagerApplet {
       Button clipMgr = new Button();
       Label clipMgrLabel = new Label(text);
       if (specialMark ==j){
+      	text = Markup.escape_text(text);
         clipMgrLabel.set_label(@"<i><b><u>$text</u></b></i>");
         clipMgrLabel.use_markup = true;
       }
