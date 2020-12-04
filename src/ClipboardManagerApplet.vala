@@ -196,7 +196,6 @@ namespace ClipboardManagerApplet {
     public static Box mainContent = new Box(Gtk.Orientation.VERTICAL, 0);
     public static Box search_container = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
     public static Entry search_box = new Gtk.Entry ();
-    public static Button search_btn;
     public static Box scrbox = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
     public static ListBox realContent = new ListBox();
     public static Separator spacerCont = new Gtk.Separator(Gtk.Orientation.HORIZONTAL);
@@ -208,7 +207,6 @@ namespace ClipboardManagerApplet {
     public static bool primode = settings.get_boolean("privatemode");
     public static ListBox setContent = new ListBox();
     public static Button pagerCont = new Gtk.Button ();
-    public static Label pager = new Gtk.Label(null);
     public static string text;
     public static bool copyselected =  settings.get_boolean("copyselected");
     public static bool minimalinterface =  settings.get_boolean("minimalinterface");
@@ -307,14 +305,16 @@ namespace ClipboardManagerApplet {
 
       search_box.set_placeholder_text("Search Clipboard....");
       search_box.set_hexpand(true);
-      search_btn = new Button.from_icon_name("search");
-      search_btn.clicked.connect(()=>{
+      search_box.changed.connect(()=>{
         text = search_box.get_text();
         if (text != null && text.strip().length != 0 && history.length !=0){
-          on_search_activate(search_box);
-        }});
+         	on_search_activate(search_box);
+        }
+        else{
+         	addRow(0);
+        }
+        });
       search_container.add(search_box);
-      search_container.add(search_btn);
     }
 
     public static void addRow(int ttype){
