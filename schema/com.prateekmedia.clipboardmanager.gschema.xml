@@ -7,19 +7,9 @@
             <description>The text that you select will be added automatically to the clipboard if value is true.</description>
             <default>false</default>
         </key>
-        <key type="b" name="selectimage">
-            <summary>Adds Selection to Clipboard</summary>
-            <description>The image that you copy will be added automatically to the clipboard if value is true.</description>
-            <default>false</default>
-        </key>
         <key type="b" name="copyselected">
             <summary>Copy Selection automatically to Clipboard</summary>
             <description>This will tell applet whether to automatically copy selection to clipboard or not.</description>
-            <default>false</default>
-        </key>
-        <key type="b" name="minimalinterface">
-            <summary>Shows Minimal Interface</summary>
-            <description>If true this will disable all unnecessary options in clipboar manager.</description>
             <default>false</default>
         </key>
         <key type="i" name="historylength">
@@ -27,9 +17,6 @@
             <description>Maximum number of clips history can hold.</description>
             <default>10</default>   
             <range min="2" max="100" />
-        </key>
-        <key name="history" type="as">
-            <default>[]</default>
         </key>
         <key type="b" name="editmode">
             <summary>Make elements dismissable</summary>
@@ -41,11 +28,15 @@
             <description>If true this prevent copying any Clip.</description>
             <default>false</default>
         </key>
-        <key type="i" name="pagesize">
-            <summary>Max page size</summary>
-            <description>Maximum number of clips one page can hold.</description>
-            <default>10</default>   
-            <range min="2" max="100" />
+        <key type="b" name="selectimage">
+            <summary>Adds Image to Clipboard (NA)</summary>
+            <description>The image that you copy will be added automatically to the clipboard if value is true.</description>
+            <default>false</default>
+        </key>
+        <key type="as" name="history">
+            <summary>History of the clipboard (NA)</summary>
+            <description>It stores history of the clipboard, so that if user logs out or restart then it is still stored their.</description>
+            <default>[]</default>
         </key>
     </schema>
 </schemalist>
