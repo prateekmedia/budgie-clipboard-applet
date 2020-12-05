@@ -35,12 +35,12 @@ $ sudo eopkg it budgie-desktop-devel vala -c system.devel
 ### *For Debian/ Ubuntu based Distro* 
 
 ```
-$ sudo apt install budgie-core-dev libglib2.0-dev libgtk-3-dev meson valac
+$ sudo apt install budgie-core-dev meson valac
 ```
 
 ### *For Arch based Distro*
 ```
-$ sudo pacman -S budgie-desktop gobject-introspection meson vala 
+$ sudo pacman -S budgie-desktop
 ```
 
 ## Building from source
