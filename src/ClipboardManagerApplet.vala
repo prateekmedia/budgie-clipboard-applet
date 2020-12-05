@@ -115,7 +115,7 @@ namespace ClipboardManagerApplet {
         heightSpin.set_halign (Gtk.Align.END);
         heightSpin.set_hexpand (true);
         
-        //Clipboard height Label
+        //Reset Btn Label
         var resetBtn = new Gtk.Button.with_label("Restore Defaults");
         resetBtn.set_halign (Gtk.Align.START);
         resetBtn.set_hexpand (true);
@@ -170,7 +170,16 @@ namespace ClipboardManagerApplet {
         });
         
         resetBtn.clicked.connect(()=>{
+        	settings.reset("historylength");
+        	settings.reset("selectclip");
+        	settings.reset("copyselected");
+        	settings.reset("clipheight");
         	
+        	historySpin.set_value(settings.get_int("historylength"));
+		    heightSpin.set_value(settings.get_int("clipheight"));
+		    selClipTggle.set_active(settings.get_boolean("selectclip"));
+		    copySelTggle.set_active(settings.get_boolean("copyselected"));
+		    copySelTggle.set_sensitive (false);
         });
     }
   }
