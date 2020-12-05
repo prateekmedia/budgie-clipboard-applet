@@ -106,12 +106,29 @@ namespace ClipboardManagerApplet {
         copySelTggle.set_halign (Gtk.Align.END);
         copySelTggle.set_hexpand (true);
 
-        attach (historyLabel,   0, 0, 1, 1);
-        attach (historySpin,    1, 0, 1, 1);
-        attach (selClipLabel,   0, 1, 1, 1);
-        attach (selClipTggle,   1, 1, 1, 1);
-        attach (copySelLabel,   0, 2, 1, 1);
-        attach (copySelTggle,   1, 2, 1, 1);
+        //Clipboard height Label
+        Label heightLabel = new Gtk.Label("Clipboard Height");
+        heightLabel.set_halign (Gtk.Align.START);
+        heightLabel.set_hexpand (true);
+        SpinButton heightSpin = new Gtk.SpinButton.with_range (50, 2000, 1);
+        heightSpin.set_value(settings.get_int("clipheight"));
+        heightSpin.set_halign (Gtk.Align.END);
+        heightSpin.set_hexpand (true);
+        
+        //Clipboard height Label
+        var resetBtn = new Gtk.Button.with_label("Restore Defaults");
+        resetBtn.set_halign (Gtk.Align.START);
+        resetBtn.set_hexpand (true);
+        
+        attach (historyLabel,	0, 0, 1, 1);
+        attach (historySpin,	1, 0, 1, 1);
+        attach (selClipLabel,	0, 1, 1, 1);
+        attach (selClipTggle,	1, 1, 1, 1);
+        attach (copySelLabel,	0, 2, 1, 1);
+        attach (copySelTggle,	1, 2, 1, 1);
+        attach (heightLabel,	0, 3, 1, 1);
+        attach (heightSpin,		1, 3, 1, 1);
+        attach (resetBtn,		0, 4, 1, 1);
 
         historySpin.value_changed.connect (()=>{
           int curr_val = historySpin.get_value_as_int();
@@ -120,6 +137,7 @@ namespace ClipboardManagerApplet {
             ClipboardManagerPopover.HISTORY_LENGTH = curr_val;
             ClipboardManagerPopover.update_pager();
             Applet.popover.get_child().show_all();
+            ClipboardManagerPopover.hide_or_show_settings();
           }
         });
 
@@ -139,6 +157,20 @@ namespace ClipboardManagerApplet {
           settings.set_boolean("copyselected" , curr_act);
           ClipboardManagerPopover.copyselected = curr_act;
           return false;
+        });
+         
+        heightSpin.value_changed.connect (()=>{
+          int curr_val = heightSpin.get_value_as_int();
+          if(ClipboardManagerPopover.clipheight != curr_val){
+            settings.set_int("clipheight", curr_val);
+			ClipboardManagerPopover.realContent.set_min_content_height (curr_val);
+            Applet.popover.get_child().show_all();
+            ClipboardManagerPopover.hide_or_show_settings();
+          }
+        });
+        
+        resetBtn.clicked.connect(()=>{
+        	
         });
     }
   }
@@ -166,8 +198,13 @@ namespace ClipboardManagerApplet {
 	public static bool edMode = settings.get_boolean("editmode");
 	public static bool primode = settings.get_boolean("privatemode");
 	public static ListBox setContent = new ListBox();
+	public static Box hBox = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+	public static Box settingsBox = new Box(Gtk.Orientation.VERTICAL, 0);
 	public static Button pagerCont = new Gtk.Button ();
+	public static Button setDropdown = new Gtk.Button ();
+	public static bool dropCount = false;
 	public static string text;
+	public static int clipheight =  settings.get_int("clipheight");
 	public static bool copyselected =  settings.get_boolean("copyselected");
 	public static int HISTORY_LENGTH = settings.get_int("historylength");
 	public static Array<string> history = new Array<string> ();
@@ -193,14 +230,25 @@ namespace ClipboardManagerApplet {
 		add(mainContent);
 		realContent.set_overlay_scrolling(true);
 		realContent.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC);
-		realContent.set_min_content_height (200);
+		realContent.set_min_content_height (clipheight);
 		scrbox.add(realContent);
 		mainContent.add(search_container);
 		mainContent.add(scrbox);
 		mainContent.add(spacerCont);
 		mainContent.add(setContent);   
 
-		setContent.add(pagerCont);
+		hBox.add(pagerCont);
+		hBox.add(setDropdown);
+		
+		setDropdown.set_label(">");
+		setDropdown.clicked.connect(()=>{
+			dropCount =  !dropCount;
+			hide_or_show_settings();
+		});
+        pagerCont.set_hexpand (true);
+
+		setContent.add(hBox);
+		setContent.add(settingsBox);
 
 		string emptyCliptext = "Empty Clipboard ";
 		Button emptyClip = new Button();
@@ -209,7 +257,7 @@ namespace ClipboardManagerApplet {
 		emptyClipLabel.set_xalign(0);
 		emptyClipLabel.use_markup = true;
 		emptyClip.add(emptyClipLabel);
-		setContent.add(emptyClip);
+		settingsBox.add(emptyClip);
 
 		update_pager();
 
@@ -232,7 +280,7 @@ namespace ClipboardManagerApplet {
 		editMode.add(editModeLabel);
 		editMode.add(editModeTggle);
 
-		setContent.add(editMode);
+		settingsBox.add(editMode);
 
 		Label privateModeLabel = new Gtk.Label("   Private Mode");
 		privateModeLabel.set_halign (Gtk.Align.START);
@@ -252,7 +300,7 @@ namespace ClipboardManagerApplet {
 		privateMode.set_tooltip_text("Enabling this will stop Clipboard Manager to save any Clips");
 		privateMode.add(privateModeLabel);
 		privateMode.add(privateModeTggle);
-		setContent.add(privateMode);
+		settingsBox.add(privateMode);
 
 		search_box.set_placeholder_text("Search Clipboard....");
 		search_box.set_hexpand(true);
@@ -314,6 +362,7 @@ namespace ClipboardManagerApplet {
 		realContent.add(listbax);
 		update_pager();
 		Applet.popover.get_child().show_all();
+		hide_or_show_settings();
 	}
 
 	public static void remove_all_rows(){
@@ -332,6 +381,7 @@ namespace ClipboardManagerApplet {
 			realContent.add(clipMgrButton);
 			update_pager();
 			Applet.popover.get_child().show_all();
+			hide_or_show_settings();
 		}
 	}
     
@@ -381,9 +431,15 @@ namespace ClipboardManagerApplet {
 			}
 		}
 	}
+	
+	public static void hide_or_show_settings(){
+		if (dropCount) { settingsBox.show(); }
+		else { settingsBox.hide(); } 
+	}
 
 	public static void update_pager(){
 		pagerCont.set_label(@"$(history.length)/$HISTORY_LENGTH");
+        pagerCont.set_hexpand (true);
 		pagerCont.set_sensitive (false);
 	}
 
@@ -403,6 +459,7 @@ namespace ClipboardManagerApplet {
 	realContent.add(listbax);
 	update_pager();
 	Applet.popover.get_child().show_all();
+	hide_or_show_settings();
 	}
     
 	public static void __on_row_activated(int copy){
@@ -445,6 +502,7 @@ namespace ClipboardManagerApplet {
 			ClipboardManager.attach_monitor_clipboard();
 			popover.get_child().show_all();
 			show_all();
+			ClipboardManagerPopover.hide_or_show_settings();
 		}
 		public override void update_popovers(Budgie.PopoverManager ? manager) {
 		this.manager = manager;

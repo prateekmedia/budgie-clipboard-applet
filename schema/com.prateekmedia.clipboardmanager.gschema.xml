@@ -38,6 +38,11 @@
             <description>It stores history of the clipboard, so that if user logs out or restart then it is still stored their.</description>
             <default>[]</default>
         </key>
+        <key type="i" name="clipheight">
+            <summary>Height of the clipboard</summary>
+            <description>This is the height of the scrollable clipboard window.</description>
+            <default>200</default>
+        </key>
     </schema>
 </schemalist>
 
