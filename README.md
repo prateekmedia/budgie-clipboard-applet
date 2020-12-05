@@ -1,6 +1,6 @@
 <p align="center"><a href="#budgie-clipboard-manager"><img src="https://raw.githubusercontent.com/prateekmedia/budgie-clipboard-applet/main/clipmgr-darkicon.png" height=80px alt="NSS Logo"/></a></p>
 <h1 align="center">Budgie Clipboard Manager</h1>
-<p align="center"><b>Version - 0.9</b></p>
+<p align="center"><b>v0.9</b></p>
 A clipboard manager applet that can help you to store and manage clipboard content on the Budgie desktop, Written using Vala
 <br>
 
@@ -22,6 +22,7 @@ $ budgie-panel --replace &!
 
 ## CONTRIBUTION
 -  Pull requests are welcome that solve [TODO](#todo) or add any useful feature / solves any bug
+-  If you have any issue then you can {report it here}(https://github.com/prateekmedia/budgie-clipboard-applet/issues) 
   
 ## Dependencies for Building from source
 
@@ -31,15 +32,15 @@ $ budgie-panel --replace &!
 $ sudo eopkg it budgie-desktop-devel vala -c system.devel
 ```
 
-### *For Debian/ Ubuntu or its Derivatives* 
+### *For Debian/ Ubuntu based Distro* 
 
 ```
-$ sudo apt install budgie-core-dev libglib2.0-dev libgtk-3-dev libpeas-dev meson valac
+$ sudo apt install budgie-core-dev libglib2.0-dev libgtk-3-dev meson valac
 ```
 
-### *For Arch or its Derivatives*
+### *For Arch based Distro*
 ```
-$ sudo pacman -S budgie-desktop libpeas intltool meson vala
+$ sudo pacman -S budgie-desktop intltool meson vala
 ```
 
 ## Building from source
@@ -66,4 +67,3 @@ Likewise the applet can be removed using `sudo ninja uninstall`
 
 ## TODO
 - [ ] Save history to schemas every time a thing is copied to clipboard(using `for loop`)
-- [ ] Solve [Issues](https://github.com/prateekmedia/budgie-clipboard-applet/issues)
