@@ -15,14 +15,14 @@ $ budgie-panel --replace &!
 - [x] Private mode option that let's you copy/select anything without saving it to Clipboard manager
 - [x] Edit mode option that let's you remove any content from Clipboard manager
 - [x] Save up to 100 Clips
-- [x] Scrollable Clipboard, so that multiple clips doesnt occupy whole screen.
+- [x] Scrollable Clipboard, so that multiple clips doesn't occupy whole screen.
 - [x] Search as you type to find the clip that you want
 - [x] Minimal Interface
 - [x] Option to restore defaults if you have messed up some of the settings.
 
 ## CONTRIBUTION
 -  Pull requests are welcome that solve [TODO](#todo) or add any useful feature / solves any bug
--  If you have any issue then you can {report it here}(https://github.com/prateekmedia/budgie-clipboard-applet/issues) 
+-  If you faced any issue related to this applet then you can simply report it using `Issues` tab.
   
 ## Dependencies for Building from source
 
@@ -40,7 +40,7 @@ $ sudo apt install budgie-core-dev libglib2.0-dev libgtk-3-dev meson valac
 
 ### *For Arch based Distro*
 ```
-$ sudo pacman -S budgie-desktop intltool meson vala
+$ sudo pacman -S budgie-desktop gobject-introspection meson vala 
 ```
 
 ## Building from source
