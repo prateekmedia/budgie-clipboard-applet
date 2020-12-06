@@ -25,7 +25,7 @@ using Gtk;
         if(!ClipboardManagerApplet.ClipboardManagerPopover.primode){
         Array<string> history = ClipboardManagerApplet.ClipboardManagerPopover.history;
         string text = get_clipboard_text();
-        if (text.strip().length != 0 && text != null){
+        if (text != null && text.chug().length != 0){
           if( text !=history.index(0)){
             ClipboardManagerApplet.ClipboardManagerPopover.addRow(0);
         }}}
@@ -36,7 +36,7 @@ using Gtk;
         Array<string> history = ClipboardManagerApplet.ClipboardManagerPopover.history;
         bool select_clip = ClipboardManagerApplet.Applet.settings.get_boolean("selectclip");
         string text = get_selected_text();
-        if (select_clip && text != null && text.strip().length != 0 ){
+        if (select_clip && text != null && text.chug().length != 0 ){
           if(text.contains(history.index(0))){
             history.remove_index(0);
           }
@@ -68,13 +68,10 @@ using Gtk;
 }
 
 namespace ClipboardManagerApplet {
-
   public class ClipboardManagerSettings: Gtk.Grid {
-    /* Budgie Settings -section */
-
     public ClipboardManagerSettings(GLib.Settings? settings) {
         // Gtk stuff, widgets etc. here
-
+        
         //History Label
         Label historyLabel = new Gtk.Label("History Size");
         historyLabel.set_halign (Gtk.Align.START);
@@ -135,9 +132,7 @@ namespace ClipboardManagerApplet {
           if(ClipboardManagerPopover.HISTORY_LENGTH != curr_val){
             settings.set_int("historylength" , curr_val);
             ClipboardManagerPopover.HISTORY_LENGTH = curr_val;
-            ClipboardManagerPopover.update_pager();
-            Applet.popover.get_child().show_all();
-            ClipboardManagerPopover.hide_or_show_settings();
+            ClipboardManagerPopover.show_all_except();
           }
         });
 
@@ -164,8 +159,7 @@ namespace ClipboardManagerApplet {
           if(ClipboardManagerPopover.clipheight != curr_val){
             settings.set_int("clipheight", curr_val);
 			ClipboardManagerPopover.realContent.set_min_content_height (curr_val);
-            Applet.popover.get_child().show_all();
-            ClipboardManagerPopover.hide_or_show_settings();
+            ClipboardManagerPopover.show_all_except();
           }
         });
         
@@ -174,6 +168,9 @@ namespace ClipboardManagerApplet {
         	settings.reset("selectclip");
         	settings.reset("copyselected");
         	settings.reset("clipheight");
+        	
+        	settings.reset("editmode");
+        	settings.reset("privatemode");
         	
         	historySpin.set_value(settings.get_int("historylength"));
 		    heightSpin.set_value(settings.get_int("clipheight"));
@@ -252,7 +249,7 @@ namespace ClipboardManagerApplet {
 		setDropdown.set_label(">");
 		setDropdown.clicked.connect(()=>{
 			dropCount =  !dropCount;
-			hide_or_show_settings();
+			show_all_except();
 		});
         pagerCont.set_hexpand (true);
 
@@ -282,6 +279,7 @@ namespace ClipboardManagerApplet {
 		  bool curr_act = editModeTggle.get_active();
 		  settings.set_boolean("editmode" , curr_act);
 		  edMode = curr_act;
+		  addRow(0);
 		  return false;
 		});
 
@@ -315,7 +313,7 @@ namespace ClipboardManagerApplet {
 		search_box.set_hexpand(true);
 		search_box.changed.connect(()=>{
 		text = search_box.get_text();
-		if (text != null && text.strip().length != 0 && history.length !=0){
+		if (text.chug().length != 0 && history.length !=0){
 		 	on_search_activate(search_box);
 		}
 		else{
@@ -329,11 +327,12 @@ namespace ClipboardManagerApplet {
 	  if (!row_activated_flag){
 		text = ClipboardManager.get_clipboard_text();
 	  }
+	  realContent.remove(listbax);
 	  listbax = new Gtk.ListBox ();
 	  if (ttype==0) { text = ClipboardManager.get_clipboard_text(); } 
 	  else if (ttype ==1 ) { text = ClipboardManager.get_selected_text(); } 
 	  else if (ttype ==2) { 
-		if (history.length == 0 || text == null || text.strip().length ==0){
+		if (history.length == 0 || text == null || text.chug().length ==0){
 		  text = "Clipboard is Currently Empty!";
 		} else {
 		    ttyped = 1;
@@ -341,8 +340,6 @@ namespace ClipboardManagerApplet {
 	   } 
 	  else { text = ""; }
 	  if (ttype >=0 && ttype <=1 || ttyped==1){
-		realContent.destroy();
-		scrbox.add(realContent);
 		  for (int j = 0; j < history.length; j++){
 		    if(text == history.index(j)){
 		      history.remove_index(j);
@@ -370,14 +367,12 @@ namespace ClipboardManagerApplet {
 		}
 		realContent.add(listbax);
 		update_pager();
-		Applet.popover.get_child().show_all();
-		hide_or_show_settings();
+		show_all_except();
 	}
 
 	public static void remove_all_rows(){
 		if (history.length >0){
-			realContent.destroy();
-			scrbox.add(realContent); 
+			realContent.remove(listbax);
 			history.remove_range(0, history.length);
 			indicatorIcon.set_from_icon_name("clipboard-outline-symbolic", Gtk.IconSize.MENU);
 			Applet.popover.hide();
@@ -389,8 +384,7 @@ namespace ClipboardManagerApplet {
 			clipMgrButton.set_sensitive (false);
 			realContent.add(clipMgrButton);
 			update_pager();
-			Applet.popover.get_child().show_all();
-			hide_or_show_settings();
+			show_all_except();
 		}
 	}
     
@@ -420,7 +414,6 @@ namespace ClipboardManagerApplet {
 		Label dissLabel = new Label("X");
 		dismissbtn.add(dissLabel);
 		  dismissbtn.clicked.connect(()=>{
-			realContent.destroy();
 			history.remove_index (copy);
 			row_activated_flag = true;
 			addRow(2);
@@ -441,7 +434,8 @@ namespace ClipboardManagerApplet {
 		}
 	}
 	
-	public static void hide_or_show_settings(){
+	public static void show_all_except(){
+		Applet.popover.get_child().show_all();
 		if (dropCount) { settingsBox.show(); }
 		else { settingsBox.hide(); } 
 	}
@@ -453,10 +447,9 @@ namespace ClipboardManagerApplet {
 	}
 
 	public static void on_search_activate (Gtk.Entry entry) {
+	realContent.remove(listbax);
 	listbax = new Gtk.ListBox();
 	string gotText = entry.get_text();
-	realContent.destroy();
-	scrbox.add(realContent);
 	int j=0;
 	for (int i=0;i<history.length;i++){
 		if (history.index(i).contains(gotText)){
@@ -467,8 +460,7 @@ namespace ClipboardManagerApplet {
 	if (j==0){ listbax.add(new Label("No Results found!")); }
 	realContent.add(listbax);
 	update_pager();
-	Applet.popover.get_child().show_all();
-	hide_or_show_settings();
+	show_all_except();
 	}
     
 	public static void __on_row_activated(int copy){
@@ -511,7 +503,7 @@ namespace ClipboardManagerApplet {
 			ClipboardManager.attach_monitor_clipboard();
 			popover.get_child().show_all();
 			show_all();
-			ClipboardManagerPopover.hide_or_show_settings();
+			ClipboardManagerPopover.show_all_except();
 		}
 		public override void update_popovers(Budgie.PopoverManager ? manager) {
 		this.manager = manager;
