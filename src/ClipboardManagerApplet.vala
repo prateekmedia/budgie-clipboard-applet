@@ -454,10 +454,10 @@ namespace ClipboardManagerApplet {
 	public static void on_search_activate (Gtk.Entry entry) {
 	realContent.remove(listbax);
 	listbax = new Gtk.ListBox();
-	string gotText = entry.get_text();
+	string gotText = entry.get_text().down();
 	int j=0;
 	for (int i=0;i<history.length;i++){
-		if (history.index(i).contains(gotText)){
+		if (history.index(i).down().contains(gotText)) {
 		add_loop(i);
 		j++;
 		}
