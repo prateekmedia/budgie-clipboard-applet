@@ -1,13 +1,8 @@
 <p align="center"><a href="#budgie-clipboard-manager"><img src="https://raw.githubusercontent.com/prateekmedia/budgie-clipboard-applet/main/clipmgr-darkicon.png" height=80px alt="NSS Logo"/></a></p>
 <h1 align="center">Budgie Clipboard Manager</h1>
-<p align="center"><b>v0.9</b></p>
+<p align="center"><b>v0.9.2</b></p>
 A clipboard manager applet that can help you to store and manage clipboard content on the Budgie desktop, Written using Vala
 <br>
-
-**To debug the applet use below command**   
-```
-$ budgie-panel --replace &!
-```
 
 ## FEATURES
 - [x] Automatically save copied / selected content from Clipboard
@@ -22,7 +17,7 @@ $ budgie-panel --replace &!
 
 ## CONTRIBUTION
 -  Pull requests are welcome that solve [TODO](#todo) or add any useful feature / solves any bug
--  If you faced any issue related to this applet then you can simply report it using `Issues` tab.
+-  You can use `Issues` tab for reporting issues
   
 ## Dependencies for Building from source
 
@@ -58,12 +53,17 @@ $ meson --buildtype plain --prefix=/usr --libdir=/usr/lib
 $ sudo ninja install
 ```
 
-## For reinstalling
+## For reinstalling/updating
 
 ```
-$ cd build; sudo ninja install
+$ sudo ninja -C build install
 ```
-Likewise the applet can be removed using `sudo ninja uninstall`
+Likewise the applet can be removed using `sudo ninja -C build uninstall`
+
+**To debug the applet use below command**   
+```
+$ budgie-panel --replace &!
+```
 
 ## TODO
 - [ ] Save history to schemas every time a thing is copied to clipboard(using `for loop`)
