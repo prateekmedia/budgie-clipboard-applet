@@ -124,8 +124,8 @@ namespace ClipboardManagerApplet {
         attach (copySelLabel,	0, 2, 1, 1);
         attach (copySelTggle,	1, 2, 1, 1);
         attach (heightLabel,	0, 3, 1, 1);
-        attach (heightSpin,		1, 3, 1, 1);
-        attach (resetBtn,		0, 4, 1, 1);
+        attach (heightSpin,	1, 3, 1, 1);
+        attach (resetBtn,	0, 4, 1, 1);
 
         historySpin.value_changed.connect (()=>{
           int curr_val = historySpin.get_value_as_int();
@@ -246,7 +246,7 @@ namespace ClipboardManagerApplet {
 		hBox.add(pagerCont);
 		hBox.add(setDropdown);
 		
-		setDropdown.set_label(">");
+		setDropdown.set_label("▼");
 		setDropdown.clicked.connect(()=>{
 			dropCount =  !dropCount;
 			show_all_except();
@@ -435,8 +435,14 @@ namespace ClipboardManagerApplet {
 	
 	public static void show_all_except(){
 		Applet.popover.get_child().show_all();
-		if (dropCount) { settingsBox.show(); }
-		else { settingsBox.hide(); } 
+		if (dropCount) {
+			settingsBox.show();
+			setDropdown.set_label("▲");
+		}
+		else { 
+			settingsBox.hide();
+			setDropdown.set_label("▼");
+		}
 	}
 
 	public static void update_pager(){
