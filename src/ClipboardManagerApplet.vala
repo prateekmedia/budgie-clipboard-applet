@@ -279,7 +279,6 @@ namespace ClipboardManagerApplet {
 		  bool curr_act = editModeTggle.get_active();
 		  settings.set_boolean("editmode" , curr_act);
 		  edMode = curr_act;
-		  addRow(0);
 		  return false;
 		});
 
