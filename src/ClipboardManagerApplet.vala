@@ -467,7 +467,9 @@ namespace ClipboardManagerApplet {
 	}
 
 	public static void update_history(string item){
-		history.prepend_val (text);
+        if(!primode){
+			history.prepend_val (text);
+		}
 		if (history.length > HISTORY_LENGTH){
 			if(history.length == HISTORY_LENGTH+1){
 				history.remove_index (HISTORY_LENGTH);
