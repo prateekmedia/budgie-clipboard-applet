@@ -38,7 +38,7 @@ $ sudo apt install budgie-core-dev meson valac
 $ sudo pacman -S budgie-desktop
 ```
 
-## Building from source
+## Building from source / Updating the applet
 Download the zip & then run from the extracted repo's folder:
 
 ```
@@ -53,15 +53,18 @@ $ meson --buildtype plain --prefix=/usr --libdir=/usr/lib
 $ sudo ninja install
 ```
 
-## For reinstalling/updating
-If you want to reinstall/ update the applet, then run from the extracted repo's folder:
+## For reinstalling
+If you want to reinstall the applet, then run from the extracted repo's folder:
 
 ```
 $ sudo ninja -C build install
 ```
-Likewise the applet can be removed using `sudo ninja -C build uninstall`
+Likewise the applet can be **uninstalled** by using 
+```
+$ sudo ninja -C build uninstall
+```
 
-**To debug the applet use below command**   
+### Debug the applet
 ```
 $ budgie-panel --replace &!
 ```
