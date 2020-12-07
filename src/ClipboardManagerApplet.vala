@@ -103,6 +103,28 @@ namespace ClipboardManagerApplet {
         copySelTggle.set_halign (Gtk.Align.END);
         copySelTggle.set_hexpand (true);
 
+        
+
+        //Case Sensitive Search
+        Label caseSenLabel = new Gtk.Label("Case Sensitive Search");
+        caseSenLabel.set_halign (Gtk.Align.START);
+        caseSenLabel.set_hexpand (true);
+        Switch caseSenTggle = new Gtk.Switch();
+        caseSenTggle.set_active(settings.get_boolean("searchsensitive"));
+        caseSenTggle.set_halign (Gtk.Align.END);
+        caseSenTggle.set_hexpand (true);
+        
+        
+        //Save History to Schemas
+        Label saveHistLabel = new Gtk.Label("Save History to Schemas");
+        saveHistLabel.set_halign (Gtk.Align.START);
+        saveHistLabel.set_hexpand (true);
+        Switch saveHistTggle = new Gtk.Switch();
+        saveHistTggle.set_active(settings.get_boolean("savehistory"));
+        saveHistTggle.set_halign (Gtk.Align.END);
+        saveHistTggle.set_hexpand (true);
+        
+        
         //Clipboard height Label
         Label heightLabel = new Gtk.Label("Clipboard Height");
         heightLabel.set_halign (Gtk.Align.START);
@@ -123,9 +145,13 @@ namespace ClipboardManagerApplet {
         attach (selClipTggle,	1, 1, 1, 1);
         attach (copySelLabel,	0, 2, 1, 1);
         attach (copySelTggle,	1, 2, 1, 1);
-        attach (heightLabel,	0, 3, 1, 1);
-        attach (heightSpin,	1, 3, 1, 1);
-        attach (resetBtn,	0, 4, 1, 1);
+        attach (caseSenLabel,	0, 3, 1, 1);
+        attach (caseSenTggle,	1, 3, 1, 1);
+        attach (saveHistLabel,	0, 4, 1, 1);
+        attach (saveHistTggle,	1, 4, 1, 1);
+        attach (heightLabel,	0, 5, 1, 1);
+        attach (heightSpin,		1, 5, 1, 1);
+        attach (resetBtn,		0, 6, 1, 1);
 
         historySpin.value_changed.connect (()=>{
           int curr_val = historySpin.get_value_as_int();
@@ -153,6 +179,20 @@ namespace ClipboardManagerApplet {
           ClipboardManagerPopover.copyselected = curr_act;
           return false;
         });
+        
+        caseSenTggle.state_set.connect (()=>{
+          bool curr_act = caseSenTggle.get_active();
+          settings.set_boolean("searchsensitive" , curr_act);
+          ClipboardManagerPopover.searchsensitive = curr_act;
+          return false;
+        });
+        
+        saveHistTggle.state_set.connect (()=>{
+          bool curr_act = saveHistTggle.get_active();
+          settings.set_boolean("savehistory" , curr_act);
+          Applet.savehistory = curr_act;
+          return false;
+        });
          
         heightSpin.value_changed.connect (()=>{
           int curr_val = heightSpin.get_value_as_int();
@@ -167,16 +207,20 @@ namespace ClipboardManagerApplet {
         	settings.reset("historylength");
         	settings.reset("selectclip");
         	settings.reset("copyselected");
+        	settings.reset("searchsensitive");
+        	settings.reset("savehistory");
         	settings.reset("clipheight");
         	
         	settings.reset("editmode");
         	settings.reset("privatemode");
         	
         	historySpin.set_value(settings.get_int("historylength"));
-		    heightSpin.set_value(settings.get_int("clipheight"));
-		    selClipTggle.set_active(settings.get_boolean("selectclip"));
-		    copySelTggle.set_active(settings.get_boolean("copyselected"));
-		    copySelTggle.set_sensitive (false);
+		heightSpin.set_value(settings.get_int("clipheight"));
+		selClipTggle.set_active(settings.get_boolean("selectclip"));
+		copySelTggle.set_active(settings.get_boolean("copyselected"));
+        	caseSenTggle.set_active(settings.get_boolean("searchsensitive"));
+        	saveHistTggle.set_active(settings.get_boolean("savehistory"));
+		copySelTggle.set_sensitive (false);
         });
     }
   }
@@ -212,6 +256,7 @@ namespace ClipboardManagerApplet {
 	public static string text;
 	public static int clipheight =  settings.get_int("clipheight");
 	public static bool copyselected =  settings.get_boolean("copyselected");
+	public static bool searchsensitive =  settings.get_boolean("searchsensitive");
 	public static int HISTORY_LENGTH = settings.get_int("historylength");
 	public static Array<string> history = new Array<string> ();
 	public static ListBox listbax = new Gtk.ListBox ();
@@ -229,8 +274,6 @@ namespace ClipboardManagerApplet {
 
 		indicatorIcon = new Gtk.Image.from_icon_name("clipboard-outline-symbolic", Gtk.IconSize.MENU);
 		indicatorBox.add(indicatorIcon);
-
-		/* gsettings stuff */
 
 		/* box */
 		add(mainContent);
@@ -311,13 +354,13 @@ namespace ClipboardManagerApplet {
 		search_box.set_placeholder_text("Search Clipboard....");
 		search_box.set_hexpand(true);
 		search_box.changed.connect(()=>{
-		text = search_box.get_text();
-		if (text.chug().length != 0 && history.length !=0){
-		 	on_search_activate(search_box);
-		}
-		else{
-		 	addRow(0);
-		}
+			text = search_box.get_text();
+			if (text.chug().length != 0 && history.length !=0){
+			 	on_search_activate(search_box);
+			}
+			else{
+			 	addRow(0);
+			}
 		});
 		search_container.add(search_box);
     }
@@ -332,7 +375,8 @@ namespace ClipboardManagerApplet {
 	  else if (ttype ==1 ) { text = ClipboardManager.get_selected_text(); } 
 	  else if (ttype ==2) { 
 		if (history.length == 0 || text == null || text.chug().length ==0){
-		  text = "Clipboard is Currently Empty!";
+		    text = "Clipboard is Currently Empty!";
+		    ttyped = 0;
 		} else {
 		    ttyped = 1;
 		}
@@ -351,7 +395,7 @@ namespace ClipboardManagerApplet {
 		  ClipboardManager.set_text(text);
 		}
 		row_activated_flag = false;
-		if (history.length ==1){
+		if (history.length >=1){
 		  indicatorIcon.set_from_icon_name("clipboard-text-outline-symbolic", Gtk.IconSize.MENU);
 		}
 		for (int j = 0; j < history.length; j++) {
@@ -431,6 +475,13 @@ namespace ClipboardManagerApplet {
 		  		history.remove_range(HISTORY_LENGTH-1 , history.length - HISTORY_LENGTH);
 			}
 		}
+		if (Applet.savehistory){
+			string[] histring = {};
+			for (int i = 0; i < history.length ; i++) {
+				histring += history.index (i);
+			}
+			settings.set_strv("history", histring);
+		}
 	}
 	
 	public static void show_all_except(){
@@ -452,22 +503,25 @@ namespace ClipboardManagerApplet {
 	}
 
 	public static void on_search_activate (Gtk.Entry entry) {
-	realContent.remove(listbax);
-	listbax = new Gtk.ListBox();
-	string gotText = entry.get_text().down();
-	int j=0;
-	for (int i=0;i<history.length;i++){
-		if (history.index(i).down().contains(gotText)) {
-		add_loop(i);
-		j++;
+		realContent.remove(listbax);
+		listbax = new Gtk.ListBox();
+		string gotText = entry.get_text();
+		int j=0;
+		for (int i=0;i<history.length;i++){
+			if (history.index(i).contains(gotText)){
+				add_loop(i);
+				j++;
+			} else if(!searchsensitive && history.index(i).down().contains(gotText.down())){
+				add_loop(i);
+				j++;
+			}
 		}
+		if (j==0){ listbax.add(new Label("No Results found!")); }
+		realContent.add(listbax);
+		update_pager();
+		show_all_except();
 	}
-	if (j==0){ listbax.add(new Label("No Results found!")); }
-	realContent.add(listbax);
-	update_pager();
-	show_all_except();
-	}
-    
+
 	public static void __on_row_activated(int copy){
 		row_activated_flag = true;
 		ClipboardManager.set_text(history.index(copy));
@@ -485,6 +539,8 @@ namespace ClipboardManagerApplet {
 		/* specifically to the settings section */
 		public override bool supports_settings() { return true; }
 		public override Gtk.Widget ? get_settings_ui() { return new ClipboardManagerSettings(settings); }
+		public static string[] historv =  settings.get_strv("history");
+		public static bool savehistory = settings.get_boolean("savehistory");
 
 		public Applet() {
 			/* box */
@@ -504,6 +560,11 @@ namespace ClipboardManagerApplet {
 				}
 				return Gdk.EVENT_STOP;
 			});
+			if (savehistory){
+				for (int i = 0; i < historv.length ; i++) {
+					ClipboardManagerPopover.history.append_val(historv[i]);
+				}
+			}
 			ClipboardManagerPopover.addRow(2);
 			ClipboardManager.attach_monitor_clipboard();
 			popover.get_child().show_all();
