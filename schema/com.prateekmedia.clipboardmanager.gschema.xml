@@ -12,6 +12,21 @@
             <description>This will tell applet whether to automatically copy selection to clipboard or not.</description>
             <default>false</default>
         </key>
+        <key type="b" name="searchsensitive">
+            <summary>Case sensitive for search</summary>
+            <description>Whether to use case sensitivity while searching.</description>
+            <default>false</default>
+        </key>
+        <key type="b" name="savehistory">
+            <summary>Save history to schemas</summary>
+            <description>Whether to save history to schemas or not.</description>
+            <default>true</default>
+        </key>
+        <key type="as" name="history">
+            <summary>History of the clipboard</summary>
+            <description>It stores history of the clipboard, so that if user logs out or restart then it is still stored their.</description>
+            <default>[]</default>
+        </key>
         <key type="i" name="historylength">
             <summary>History Length</summary>
             <description>Maximum number of clips history can hold.</description>
@@ -33,11 +48,6 @@
             <description>The image that you copy will be added automatically to the clipboard if value is true.</description>
             <default>false</default>
         </key>
-        <key type="as" name="history">
-            <summary>History of the clipboard (NA)</summary>
-            <description>It stores history of the clipboard, so that if user logs out or restart then it is still stored their.</description>
-            <default>[]</default>
-        </key>
         <key type="i" name="clipheight">
             <summary>Height of the clipboard</summary>
             <description>This is the height of the scrollable clipboard window.</description>
@@ -45,5 +55,3 @@
         </key>
     </schema>
 </schemalist>
-
-
