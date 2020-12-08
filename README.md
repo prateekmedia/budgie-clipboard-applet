@@ -70,4 +70,5 @@ $ budgie-panel --replace &!
 ```
 
 ## TODO
+- [ ] Study [davidmhewitt / clipped](https://github.com/davidmhewitt/clipped) for features/solving issues
 - [ ] Solve [Issues](https://github.com/prateekmedia/budgie-clipboard-applet/issues)
