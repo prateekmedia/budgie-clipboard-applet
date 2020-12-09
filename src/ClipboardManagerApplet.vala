@@ -253,6 +253,8 @@ namespace ClipboardManagerApplet {
 	public static Separator spacerCont = new Gtk.Separator(Gtk.Orientation.HORIZONTAL);
 	public static Box privateMode = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
 	public static bool primode = settings.get_boolean("privatemode");
+	public static Box notifyMe = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
+	public static bool sendNotifications = settings.get_boolean("notifications");
 	public static ListBox setContent = new ListBox();
 	public static Box hBox = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
 	public static Box settingsBox = new Box(Gtk.Orientation.VERTICAL, 0);
@@ -346,6 +348,27 @@ namespace ClipboardManagerApplet {
 		privateMode.add(privateModeLabel);
 		privateMode.add(privateModeTggle);
 		settingsBox.add(privateMode);
+		
+		
+		Label notifyMeLabel = new Gtk.Label("   Notifications");
+		notifyMeLabel.set_halign (Gtk.Align.START);
+		notifyMeLabel.set_hexpand (true);
+		Switch notifyMeTggle = new Gtk.Switch();
+		notifyMeTggle.set_active(sendNotifications);
+		notifyMeTggle.set_halign (Gtk.Align.END);
+		notifyMeTggle.set_hexpand (true);
+
+		notifyMeTggle.state_set.connect (()=>{
+            bool curr_act = notifyMeTggle.get_active();
+            settings.set_boolean("notifications" , curr_act);
+            sendNotifications = curr_act;
+            return false;
+		});
+
+		notifyMe.set_tooltip_text("Enabling this will Notify you about every clips you copy.");
+		notifyMe.add(notifyMeLabel);
+		notifyMe.add(notifyMeTggle);
+		settingsBox.add(notifyMe);
 
 		search_box.set_placeholder_text("Search Clipboard....");
 		search_box.set_hexpand(true);
@@ -545,12 +568,18 @@ namespace ClipboardManagerApplet {
 
 	public static void __on_row_activated(int copy){
 		row_activated_flag = true;
-		ClipboardManager.set_text(history[copy]);
 		string text = history[copy];
+		ClipboardManager.set_text(text);
 		if (text.length > 250){
-		    text.slice(0,250);
+		    text = text.slice(0,250) + "...";
 		}
-		Process.spawn_command_line_async("notify-send Copied! "+ text + " --icon clipboard-text-outline-symbolic");
+		if (sendNotifications){
+		    try{
+		        Process.spawn_command_line_async("notify-send Copied! '"+ text + "' --icon clipboard-text-outline-symbolic");
+	        } catch (Error e) {
+		        error ("Error: %s", e.message);
+	        }
+		}
 		Applet.popover.hide();
 		specialMark = copy;
 	}

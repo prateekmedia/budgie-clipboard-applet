@@ -38,6 +38,11 @@
             <description>If true this prevent copying any Clip.</description>
             <default>false</default>
         </key>
+        <key type="b" name="notifications">
+            <summary>Notify about clipboard</summary>
+            <description>If true this will notify about your activity with clipboard manager.</description>
+            <default>true</default>
+        </key>
         <key type="b" name="selectimage">
             <summary>Adds Image to Clipboard (NA)</summary>
             <description>The image that you copy will be added automatically to the clipboard if value is true.</description>
