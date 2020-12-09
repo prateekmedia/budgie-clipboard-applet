@@ -1,5 +1,4 @@
 using Gtk;
-
 /*
  * Clipboard Manager
  *
@@ -547,6 +546,11 @@ namespace ClipboardManagerApplet {
 	public static void __on_row_activated(int copy){
 		row_activated_flag = true;
 		ClipboardManager.set_text(history[copy]);
+		string text = history[copy];
+		if (text.length > 250){
+		    text.slice(0,250);
+		}
+		Process.spawn_command_line_async("notify-send Copied! "+ text + " --icon clipboard-text-outline-symbolic");
 		Applet.popover.hide();
 		specialMark = copy;
 	}
