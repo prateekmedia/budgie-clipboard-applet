@@ -279,8 +279,11 @@ namespace ClipboardManagerApplet {
 
 	public ClipboardManagerPopover(Gtk.EventBox indicatorBox) {
 		Object(relative_to: indicatorBox);
-
+        
 		indicatorIcon = new Gtk.Image.from_icon_name("clipboard-outline-symbolic", Gtk.IconSize.MENU);
+        if (primode){
+	        indicatorIcon.set_from_icon_name("clipboard-outline-broken-symbolic", Gtk.IconSize.MENU);
+        }
 		indicatorBox.add(indicatorIcon);
 
 		/* box */
@@ -322,7 +325,7 @@ namespace ClipboardManagerApplet {
 		privateModeLabel.set_halign (Gtk.Align.START);
 		privateModeLabel.set_hexpand (true);
 		Switch privateModeTggle = new Gtk.Switch();
-		privateModeTggle.set_active(settings.get_boolean("privatemode"));
+		privateModeTggle.set_active(primode);
 		privateModeTggle.set_halign (Gtk.Align.END);
 		privateModeTggle.set_hexpand (true);
 
@@ -331,6 +334,12 @@ namespace ClipboardManagerApplet {
             settings.set_boolean("privatemode" , curr_act);
             primode = curr_act;
             ClipboardManager.attach_monitor_clipboard();
+            if (curr_act){
+		        indicatorIcon.set_from_icon_name("clipboard-outline-broken-symbolic", Gtk.IconSize.MENU);
+            } else {
+                if (history.length !=0){ indicatorIcon.set_from_icon_name("clipboard-text-outline-symbolic", Gtk.IconSize.MENU);
+                } else { indicatorIcon.set_from_icon_name("clipboard-outline-symbolic", Gtk.IconSize.MENU); }
+            }
             return false;
 		});
 
@@ -364,6 +373,7 @@ namespace ClipboardManagerApplet {
 	  else if (ttype ==2) { 
 		if (history.length == 0 || text == null || text.chug().length ==0){
 		    text = "Clipboard is Currently Empty!";
+			indicatorIcon.set_from_icon_name("clipboard-outline-symbolic", Gtk.IconSize.MENU);
 		    ttyped = 0;
 		} else {
 		    ttyped = 1;
