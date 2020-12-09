@@ -33,11 +33,6 @@
             <default>10</default>   
             <range min="2" max="100" />
         </key>
-        <key type="b" name="editmode">
-            <summary>Make elements dismissable</summary>
-            <description>If true this will display X button after every Clip.</description>
-            <default>false</default>
-        </key>
         <key type="b" name="privatemode">
             <summary>Doesnt copy clips to clipboard</summary>
             <description>If true this prevent copying any Clip.</description>

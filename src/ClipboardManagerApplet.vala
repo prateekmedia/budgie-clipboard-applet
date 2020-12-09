@@ -21,30 +21,20 @@ using Gtk;
 
   public static bool attach_monitor_clipboard() {
     monitor_clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
-    monitor_clipboard.owner_change.connect ((ev) => {
-        if(!ClipboardManagerApplet.ClipboardManagerPopover.primode){
-        Array<string> history = ClipboardManagerApplet.ClipboardManagerPopover.history;
-        string text = get_clipboard_text();
-        if (text != null && text.chug().length != 0){
-          if( text !=history.index(0)){
-            ClipboardManagerApplet.ClipboardManagerPopover.addRow(0);
-        }}}
-      });
-      monitor_clipboard_selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
-      monitor_clipboard_selection.owner_change.connect ((ev) => {
-        if(!ClipboardManagerApplet.ClipboardManagerPopover.primode){
-        Array<string> history = ClipboardManagerApplet.ClipboardManagerPopover.history;
-        bool select_clip = ClipboardManagerApplet.Applet.settings.get_boolean("selectclip");
-        string text = get_selected_text();
-        if (select_clip && text != null && text.chug().length != 0 ){
-          if(text.contains(history.index(0))){
-            history.remove_index(0);
-          }
-          if( text !=history.index(0)){
-            ClipboardManagerApplet.ClipboardManagerPopover.addRow(1);
-          }
-        }}
-      });
+    monitor_clipboard_selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
+    bool select_clip = ClipboardManagerApplet.Applet.settings.get_boolean("selectclip");
+    if(!ClipboardManagerApplet.ClipboardManagerPopover.primode){
+        monitor_clipboard.owner_change.connect (do_this_with_clipboard_text);
+        if(select_clip){
+            monitor_clipboard_selection.owner_change.connect (do_this_with_selected_text);
+        } else {
+            monitor_clipboard_selection.owner_change.disconnect (do_this_with_selected_text);
+        }
+    } else {
+        monitor_clipboard.owner_change.disconnect (do_this_with_clipboard_text);
+        monitor_clipboard_selection.owner_change.disconnect (do_this_with_selected_text);
+        
+    }
       return false;
   }
 
@@ -65,12 +55,36 @@ using Gtk;
         clipboard.set_text (item, item.length);
       }
   }
+  
+  public static void do_this_with_clipboard_text () {
+    Array<string> history = ClipboardManagerApplet.ClipboardManagerPopover.history;
+    string text = get_clipboard_text();
+    if (text != null && text.chug().length != 0){
+      if( text !=history.index(0)){
+        ClipboardManagerApplet.ClipboardManagerPopover.addRow(0);
+    }}
+  }
+  
+  public static void do_this_with_selected_text () {
+    Array<string> history = ClipboardManagerApplet.ClipboardManagerPopover.history;
+    string text = get_selected_text();
+    if (text != null && text.chug().length != 0 ){
+      if(text.contains(history.index(0))){
+        history.remove_index(0);
+      }
+      if( text !=history.index(0)){
+        ClipboardManagerApplet.ClipboardManagerPopover.addRow(1);
+      }
+    }
+  }
 }
 
 namespace ClipboardManagerApplet {
+  private static Gtk.Clipboard monitor_clipboard_selection;
   public class ClipboardManagerSettings: Gtk.Grid {
     public ClipboardManagerSettings(GLib.Settings? settings) {
         // Gtk stuff, widgets etc. here
+         monitor_clipboard_selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
         
         //History Label
         Label historyLabel = new Gtk.Label("History Size");
@@ -163,14 +177,11 @@ namespace ClipboardManagerApplet {
         });
 
         selClipTggle.state_set.connect (()=>{
-          bool curr_act = selClipTggle.get_active();
-          settings.set_boolean("selectclip" , curr_act);
-          if(curr_act){
-            copySelTggle.set_sensitive (true);
-          } else {
-            copySelTggle.set_sensitive (false);
-          }
-          return false;
+            bool curr_act = selClipTggle.get_active();
+            settings.set_boolean("selectclip" , curr_act);
+            copySelTggle.set_sensitive (curr_act);
+            ClipboardManager.attach_monitor_clipboard();
+            return false;
         });
 
         copySelTggle.state_set.connect (()=>{
@@ -210,8 +221,6 @@ namespace ClipboardManagerApplet {
         	settings.reset("searchsensitive");
         	settings.reset("savehistory");
         	settings.reset("clipheight");
-        	
-        	settings.reset("editmode");
         	settings.reset("privatemode");
         	
         	historySpin.set_value(settings.get_int("historylength"));
@@ -243,9 +252,7 @@ namespace ClipboardManagerApplet {
 	public static ListBox scrbox = new ListBox();
 	public static ScrolledWindow realContent = new Gtk.ScrolledWindow (null,null);
 	public static Separator spacerCont = new Gtk.Separator(Gtk.Orientation.HORIZONTAL);
-	public static Box editMode = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
 	public static Box privateMode = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
-	public static bool edMode = settings.get_boolean("editmode");
 	public static bool primode = settings.get_boolean("privatemode");
 	public static ListBox setContent = new ListBox();
 	public static Box hBox = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
@@ -299,7 +306,7 @@ namespace ClipboardManagerApplet {
 		setContent.add(hBox);
 		setContent.add(settingsBox);
 
-		string emptyCliptext = "Empty Clipboard ";
+		string emptyCliptext = "Clear All ";
 		Button emptyClip = new Button();
 		emptyClip.clicked.connect(remove_all_rows);
 		Label emptyClipLabel = new Label(@"<b>$emptyCliptext</b>");
@@ -310,27 +317,6 @@ namespace ClipboardManagerApplet {
 
 		update_pager();
 
-		Label editModeLabel = new Gtk.Label("   Edit Mode");
-		editModeLabel.set_halign (Gtk.Align.START);
-		editModeLabel.set_hexpand (true);
-		Switch editModeTggle = new Gtk.Switch();
-		editModeTggle.set_active(settings.get_boolean("editmode"));
-		editModeTggle.set_halign (Gtk.Align.END);
-		editModeTggle.set_hexpand (true);
-
-		editModeTggle.state_set.connect (()=>{
-		  bool curr_act = editModeTggle.get_active();
-		  settings.set_boolean("editmode" , curr_act);
-		  edMode = curr_act;
-		  return false;
-		});
-
-		editMode.set_tooltip_text("Enabling this will add Cross icon to delete Clipboard Contents");
-		editMode.add(editModeLabel);
-		editMode.add(editModeTggle);
-
-		settingsBox.add(editMode);
-
 		Label privateModeLabel = new Gtk.Label("   Private Mode");
 		privateModeLabel.set_halign (Gtk.Align.START);
 		privateModeLabel.set_hexpand (true);
@@ -340,10 +326,11 @@ namespace ClipboardManagerApplet {
 		privateModeTggle.set_hexpand (true);
 
 		privateModeTggle.state_set.connect (()=>{
-		  bool curr_act = privateModeTggle.get_active();
-		  settings.set_boolean("privatemode" , curr_act);
-		  primode = curr_act;
-		  return false;
+            bool curr_act = privateModeTggle.get_active();
+            settings.set_boolean("privatemode" , curr_act);
+            primode = curr_act;
+            ClipboardManager.attach_monitor_clipboard();
+            return false;
 		});
 
 		privateMode.set_tooltip_text("Enabling this will stop Clipboard Manager to save any Clips");
@@ -433,6 +420,10 @@ namespace ClipboardManagerApplet {
     
 	public static void add_loop(int j){
 		text = history.index(j);
+	    string subtext = text;
+		if (text.length >100){
+		     subtext = text.slice(0,100) + "...";  
+		}
 		text = text.replace("\n", " ").strip();
 		if (text.length >30){
 		text = text.substring(0,30) + "...";
@@ -449,20 +440,19 @@ namespace ClipboardManagerApplet {
 		clipMgrLabel.set_xalign(0);
 		clipMgr.add(clipMgrLabel);
 		clipMgr.set_hexpand(true);
+		clipMgr.set_tooltip_text(subtext);
 		// print(@"$j =>  $(history.index (j)) \n");
 		clipMgr.clicked.connect(()=>__on_row_activated(copy));
 		btnlist.add(clipMgr);
-		if (edMode){
 		Button dismissbtn = new Button();
-		Label dissLabel = new Label("X");
-		dismissbtn.add(dissLabel);
+		Image dissImage =  new Gtk.Image.from_icon_name("edit-delete-symbolic", Gtk.IconSize.BUTTON);;
+		dismissbtn.add(dissImage);
 		  dismissbtn.clicked.connect(()=>{
 			history.remove_index (copy);
 			row_activated_flag = true;
 			addRow(2);
 		  });
 		btnlist.add(dismissbtn);
-		}
 		listbax.add(btnlist);
 	}
 
