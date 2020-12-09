@@ -57,22 +57,22 @@ using Gtk;
   }
   
   public static void do_this_with_clipboard_text () {
-    Array<string> history = ClipboardManagerApplet.ClipboardManagerPopover.history;
+    string[] history = ClipboardManagerApplet.ClipboardManagerPopover.history;
     string text = get_clipboard_text();
     if (text != null && text.chug().length != 0){
-      if( text !=history.index(0)){
+      if( text !=history[0]){
         ClipboardManagerApplet.ClipboardManagerPopover.addRow(0);
     }}
   }
   
   public static void do_this_with_selected_text () {
-    Array<string> history = ClipboardManagerApplet.ClipboardManagerPopover.history;
+    string[]  history = ClipboardManagerApplet.ClipboardManagerPopover.history;
     string text = get_selected_text();
     if (text != null && text.chug().length != 0 ){
-      if(text.contains(history.index(0))){
-        history.remove_index(0);
+      if(text.contains(history[0])){
+        ClipboardManagerApplet.ClipboardManagerPopover.remove_index_from(0);
       }
-      if( text !=history.index(0)){
+      if( text !=history[0]){
         ClipboardManagerApplet.ClipboardManagerPopover.addRow(1);
       }
     }
@@ -260,16 +260,17 @@ namespace ClipboardManagerApplet {
 	public static Button pagerCont = new Gtk.Button ();
 	public static Button setDropdown = new Gtk.Button ();
 	public static bool dropCount = false;
+    public static Image goUp = new Gtk.Image.from_icon_name("pan-up-symbolic", Gtk.IconSize.BUTTON);
+    public static Image goDown = new Gtk.Image.from_icon_name("pan-down-symbolic", Gtk.IconSize.BUTTON);
 	public static string text;
 	public static int clipheight =  settings.get_int("clipheight");
 	public static bool copyselected =  settings.get_boolean("copyselected");
 	public static bool searchsensitive =  settings.get_boolean("searchsensitive");
 	public static int HISTORY_LENGTH = settings.get_int("historylength");
-	public static Array<string> history = new Array<string> ();
+	public static string[] history = {};
 	public static ListBox listbax = new Gtk.ListBox ();
 	public static bool row_activated_flag = false;
 	public static bool private_mode = false;
-	public static int idx;
 	public static int ttyped = 0;
 	public static int specialMark = 0;
 	/* process stuff */
@@ -296,7 +297,7 @@ namespace ClipboardManagerApplet {
 		hBox.add(pagerCont);
 		hBox.add(setDropdown);
 		
-		setDropdown.set_label("▼");
+		setDropdown.set_image(goDown);
 		setDropdown.clicked.connect(()=>{
 			dropCount =  !dropCount;
 			show_all_except();
@@ -371,8 +372,8 @@ namespace ClipboardManagerApplet {
 	  else { text = ""; }
 	  if (ttype >=0 && ttype <=1 || ttyped==1){
 		  for (int j = 0; j < history.length; j++){
-		    if(text == history.index(j)){
-		      history.remove_index(j);
+		    if(text == history[j]){
+		      remove_index_from(j);
 		      break;
 		    }
 		  }
@@ -403,7 +404,7 @@ namespace ClipboardManagerApplet {
 	public static void remove_all_rows(){
 		if (history.length >0){
 			realContent.remove(listbax);
-			history.remove_range(0, history.length);
+			remove_range_from(0);
 			indicatorIcon.set_from_icon_name("clipboard-outline-symbolic", Gtk.IconSize.MENU);
 			Applet.popover.hide();
 			ClipboardManager.set_text("");
@@ -419,14 +420,14 @@ namespace ClipboardManagerApplet {
 	}
     
 	public static void add_loop(int j){
-		text = history.index(j);
+		text = history[j];
 	    string subtext = text;
 		if (text.length >100){
-		     subtext = text.slice(0,100) + "...";  
+		     subtext = text.strip().slice(0,100) + "...";  
 		}
 		text = text.replace("\n", " ").strip();
 		if (text.length >30){
-		text = text.substring(0,30) + "...";
+		text = text.slice(0,30) + "...";
 		}
 		int copy = j;
 		Box btnlist = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
@@ -441,14 +442,14 @@ namespace ClipboardManagerApplet {
 		clipMgr.add(clipMgrLabel);
 		clipMgr.set_hexpand(true);
 		clipMgr.set_tooltip_text(subtext);
-		// print(@"$j =>  $(history.index (j)) \n");
+		// print(@"$j =>  $(history[j]) \n");
 		clipMgr.clicked.connect(()=>__on_row_activated(copy));
 		btnlist.add(clipMgr);
 		Button dismissbtn = new Button();
 		Image dissImage =  new Gtk.Image.from_icon_name("edit-delete-symbolic", Gtk.IconSize.BUTTON);;
-		dismissbtn.add(dissImage);
+		dismissbtn.set_image(dissImage);
 		  dismissbtn.clicked.connect(()=>{
-			history.remove_index (copy);
+			remove_index_from(copy);
 			row_activated_flag = true;
 			addRow(2);
 		  });
@@ -457,34 +458,53 @@ namespace ClipboardManagerApplet {
 	}
 
 	public static void update_history(string item){
+	    string[] newHistory = {};
         if(!primode){
-			history.prepend_val (text);
+            newHistory += text;
+            for (int i=0; i<history.length; i++){
+                newHistory += history[i];
+            }
+			history = newHistory;
 		}
 		if (history.length > HISTORY_LENGTH){
 			if(history.length == HISTORY_LENGTH+1){
-				history.remove_index (HISTORY_LENGTH);
+				remove_index_from(HISTORY_LENGTH);
 			} else{
-		  		history.remove_range(HISTORY_LENGTH-1 , history.length - HISTORY_LENGTH);
+		  		remove_range_from(HISTORY_LENGTH-1);
 			}
 		}
 		if (Applet.savehistory){
-			string[] histring = {};
-			for (int i = 0; i < history.length ; i++) {
-				histring += history.index (i);
-			}
-			settings.set_strv("history", histring);
+		    settings.set_strv("history", history);
 		}
+	}
+	
+	public static void remove_index_from(int idx){
+	    string[] newArray = {};
+        for (int i=0; i<history.length; i++){
+            if (i!=idx){
+                newArray += history[i];
+        }}
+		history = newArray;
+	}
+	
+	public static void remove_range_from(int idx1){
+	    string[] newArray = {};
+        for (int i=0; i<history.length; i++){
+            if (i<idx1){
+                newArray += history[i];
+        }}
+		history = newArray;
 	}
 	
 	public static void show_all_except(){
 		Applet.popover.get_child().show_all();
 		if (dropCount) {
 			settingsBox.show();
-			setDropdown.set_label("▲");
+			setDropdown.set_image(goUp);
 		}
 		else { 
 			settingsBox.hide();
-			setDropdown.set_label("▼");
+			setDropdown.set_image(goDown);
 		}
 	}
 
@@ -500,10 +520,10 @@ namespace ClipboardManagerApplet {
 		string gotText = entry.get_text();
 		int j=0;
 		for (int i=0;i<history.length;i++){
-			if (history.index(i).contains(gotText)){
+			if (history[i].contains(gotText)){
 				add_loop(i);
 				j++;
-			} else if(!searchsensitive && history.index(i).down().contains(gotText.down())){
+			} else if(!searchsensitive && history[i].down().contains(gotText.down())){
 				add_loop(i);
 				j++;
 			}
@@ -516,7 +536,7 @@ namespace ClipboardManagerApplet {
 
 	public static void __on_row_activated(int copy){
 		row_activated_flag = true;
-		ClipboardManager.set_text(history.index(copy));
+		ClipboardManager.set_text(history[copy]);
 		Applet.popover.hide();
 		specialMark = copy;
 	}
@@ -531,9 +551,7 @@ namespace ClipboardManagerApplet {
 		/* specifically to the settings section */
 		public override bool supports_settings() { return true; }
 		public override Gtk.Widget ? get_settings_ui() { return new ClipboardManagerSettings(settings); }
-		public static string[] historv =  settings.get_strv("history");
 		public static bool savehistory = settings.get_boolean("savehistory");
-
 		public Applet() {
 			/* box */
 			indicatorBox = new Gtk.EventBox();
@@ -553,9 +571,7 @@ namespace ClipboardManagerApplet {
 				return Gdk.EVENT_STOP;
 			});
 			if (savehistory){
-				for (int i = 0; i < historv.length ; i++) {
-					ClipboardManagerPopover.history.append_val(historv[i]);
-				}
+			    ClipboardManagerPopover.history = settings.get_strv("history");
 			}
 			ClipboardManagerPopover.addRow(2);
 			ClipboardManager.attach_monitor_clipboard();
