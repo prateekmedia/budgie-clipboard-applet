@@ -12,70 +12,78 @@ using Gtk;
 
  public class ClipboardManager : Object {
     /*
-  * Here we keep the (possibly) shared stuff, or general functions, to
-  * keep the main code clean and readable
-  */
-  private static Gtk.Clipboard monitor_clipboard;
-  private static Gtk.Clipboard monitor_clipboard_selection;
+    * Here we keep the (possibly) shared stuff, or general functions, to
+    * keep the main code clean and readable
+    */
+    private static Gtk.Clipboard monitor_clipboard;
+    private static Gtk.Clipboard monitor_clipboard_selection;
 
-  public static bool attach_monitor_clipboard() {
-    monitor_clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
-    monitor_clipboard_selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
-    bool select_clip = ClipboardManagerApplet.Applet.settings.get_boolean("selectclip");
-    if(!ClipboardManagerApplet.ClipboardManagerPopover.primode){
-        monitor_clipboard.owner_change.connect (do_this_with_clipboard_text);
-        if(select_clip){
-            monitor_clipboard_selection.owner_change.connect (do_this_with_selected_text);
+    public static bool attach_monitor_clipboard() {
+        monitor_clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
+        monitor_clipboard_selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
+        bool select_clip = ClipboardManagerApplet.Applet.settings.get_boolean("selectclip");
+        if(!ClipboardManagerApplet.ClipboardManagerPopover.primode){
+            monitor_clipboard.owner_change.connect (do_this_with_clipboard_text);
+            if(select_clip){
+                monitor_clipboard_selection.owner_change.connect (do_this_with_selected_text);
+            } else {
+                monitor_clipboard_selection.owner_change.disconnect (do_this_with_selected_text);
+            }
         } else {
+            monitor_clipboard.owner_change.disconnect (do_this_with_clipboard_text);
             monitor_clipboard_selection.owner_change.disconnect (do_this_with_selected_text);
+            
         }
-    } else {
-        monitor_clipboard.owner_change.disconnect (do_this_with_clipboard_text);
-        monitor_clipboard_selection.owner_change.disconnect (do_this_with_selected_text);
-        
+        return false;
     }
-      return false;
-  }
 
-  public static string get_selected_text () {
-      var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
-      string text = clipboard.wait_for_text ();
-      return text;
-  }
-  
-  public static string get_clipboard_text () {
-      var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
-      string text = clipboard.wait_for_text ();
-      return text;
-  }
-  public static void set_text (string? item) {
-      var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
-      if (item != null &&item != clipboard.wait_for_text ()){
-        clipboard.set_text (item, item.length);
-      }
-  }
-  
-  public static void do_this_with_clipboard_text () {
-    string[] history = ClipboardManagerApplet.ClipboardManagerPopover.history;
-    string text = get_clipboard_text();
-    if (text != null && text.chug().length != 0){
-      if( text !=history[0]){
-        ClipboardManagerApplet.ClipboardManagerPopover.addRow(0);
-    }}
-  }
-  
-  public static void do_this_with_selected_text () {
-    string[]  history = ClipboardManagerApplet.ClipboardManagerPopover.history;
-    string text = get_selected_text();
-    if (text != null && text.chug().length != 0 ){
-      if(text.contains(history[0])){
-        ClipboardManagerApplet.ClipboardManagerPopover.remove_index_from(0);
-      }
-      if( text !=history[0]){
-        ClipboardManagerApplet.ClipboardManagerPopover.addRow(1);
-      }
+    public static string get_selected_text () {
+        var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
+        string text = clipboard.wait_for_text ();
+        return text;
     }
-  }
+
+    public static string get_clipboard_text () {
+        var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
+        string text = clipboard.wait_for_text ();
+        return text;
+    }
+    public static void set_text (string? item) {
+        var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
+        if (item != null &&item != clipboard.wait_for_text ()){
+        clipboard.set_text (item, item.length);
+        }
+    }
+
+    public static void do_this_with_clipboard_text () {
+        string[] history = ClipboardManagerApplet.ClipboardManagerPopover.history;
+        string text = get_clipboard_text();
+        if (text != null && text.chug().length != 0){
+          if( text !=history[0]){
+            ClipboardManagerApplet.ClipboardManagerPopover.addRow(0);
+        }}
+    }
+
+    public static void do_this_with_selected_text () {
+        string[]  history = ClipboardManagerApplet.ClipboardManagerPopover.history;
+        string text = get_selected_text();
+        if (text != null && text.chug().length != 0 ){
+          if(text.contains(history[0])){
+            ClipboardManagerApplet.ClipboardManagerPopover.remove_index_from_history(0);
+          }
+          if( text !=history[0]){
+            ClipboardManagerApplet.ClipboardManagerPopover.addRow(1);
+          }
+        }
+    }
+  
+    public static void send_notification_now(string title, string body, string icon= "clipboard-text-outline-symbolic"){
+        try{
+            Process.spawn_command_line_async(@"notify-send $title '$body' --icon $icon");
+        } catch (Error e) {
+            error ("Error: %s", e.message);
+        }
+    }
 }
 
 namespace ClipboardManagerApplet {
@@ -290,7 +298,7 @@ namespace ClipboardManagerApplet {
 		/* box */
 		add(mainContent);
 		realContent.set_overlay_scrolling(true);
-		realContent.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC);
+		realContent.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.EXTERNAL);
 		realContent.set_min_content_height (clipheight);
 		scrbox.add(realContent);
 		mainContent.add(search_container);
@@ -378,7 +386,12 @@ namespace ClipboardManagerApplet {
 			 	on_search_activate(search_box);
 			}
 			else{
-			 	addRow(0);
+		        realContent.remove(listbax);
+		        listbax = new Gtk.ListBox();
+                add_marked_text_in_loop();
+		        realContent.add(listbax);
+		        update_pager();
+		        show_all_except();
 			}
 		});
 		search_container.add(search_box);
@@ -394,40 +407,21 @@ namespace ClipboardManagerApplet {
 	  else if (ttype ==1 ) { text = ClipboardManager.get_selected_text(); } 
 	  else if (ttype ==2) { 
 		if (history.length == 0 || text == null || text.chug().length ==0){
-		    text = "Clipboard is Currently Empty!";
-			indicatorIcon.set_from_icon_name("clipboard-outline-symbolic", Gtk.IconSize.MENU);
 		    ttyped = 0;
 		} else {
 		    ttyped = 1;
 		}
 	   } 
 	  else { text = ""; }
-	  if (ttype >=0 && ttype <=1 || ttyped==1){
-		  for (int j = 0; j < history.length; j++){
-		    if(text == history[j]){
-		      remove_index_from(j);
-		      break;
-		    }
-		  }
-		  update_history(text);
-		  specialMark = 0;
-		if (copyselected && ttype ==1){
-		  ClipboardManager.set_text(text);
-		}
-		row_activated_flag = false;
-		if (history.length >=1){
-		  indicatorIcon.set_from_icon_name("clipboard-text-outline-symbolic", Gtk.IconSize.MENU);
-		}
-		for (int j = 0; j < history.length; j++) {
-		  add_loop(j);
-		}
-		} else {
-		  Label clipMgrLabel = new Label(text);
-		  Button clipMgrButton = new Button();
-		  clipMgrButton.add(clipMgrLabel);
-		  clipMgrButton.set_sensitive (false);
-		  listbax.add(clipMgrButton);
-		}
+        if (ttype >=0 && ttype <=1 || ttyped==1){
+            delete_duplicates_from_history(text);
+            if (copyselected && ttype == 1){
+              ClipboardManager.set_text(text);
+            }
+            add_marked_text_in_loop();
+        } else {
+            clip_curr_empty();
+        }
 		realContent.add(listbax);
 		update_pager();
 		show_all_except();
@@ -436,25 +430,30 @@ namespace ClipboardManagerApplet {
 	public static void remove_all_rows(){
 		if (history.length >0){
 			realContent.remove(listbax);
-			remove_range_from(0);
+			listbax = new Gtk.ListBox ();
+			remove_range_from_history(0);
 			indicatorIcon.set_from_icon_name("clipboard-outline-symbolic", Gtk.IconSize.MENU);
 			Applet.popover.hide();
 			ClipboardManager.set_text("");
-			string text = "Clipboard is Currently Empty!";
-			Label clipMgrLabel = new Label(text);
-			Button clipMgrButton = new Button();
-			clipMgrButton.add(clipMgrLabel);
-			clipMgrButton.set_sensitive (false);
-			realContent.add(clipMgrButton);
+		    clip_curr_empty();
+			realContent.add(listbax);
 			update_pager();
 			show_all_except();
 		}
 	}
+	
+	public static void add_marked_text_in_loop(int copy = 0){
+        specialMark = copy;
+        row_activated_flag = false;
+        for (int j = 0; j < history.length; j++) {
+          add_element_to_listbax(j);
+        }
+    }
     
-	public static void add_loop(int j){
+	public static void add_element_to_listbax(int j){
 		text = history[j];
-	    string subtext = text;
-		if (text.length >100){
+	    string subtext = text.replace("\t", " ").strip();;
+		if (subtext.length >100){
 		     subtext = text.strip().slice(0,100) + "...";  
 		}
 		text = text.replace("\n", " ").strip();
@@ -466,9 +465,9 @@ namespace ClipboardManagerApplet {
 		Button clipMgr = new Button();
 		Label clipMgrLabel = new Label(text);
 		if (specialMark ==j){
-		text = Markup.escape_text(text);
-		clipMgrLabel.set_label(@"<i><b><u>$text</u></b></i>");
-		clipMgrLabel.use_markup = true;
+		    text = Markup.escape_text(text);
+		    clipMgrLabel.set_label(@"<i><b><u>$text</u></b></i>");
+		    clipMgrLabel.use_markup = true;
 		}
 		clipMgrLabel.set_xalign(0);
 		clipMgr.add(clipMgrLabel);
@@ -481,9 +480,18 @@ namespace ClipboardManagerApplet {
 		Image dissImage =  new Gtk.Image.from_icon_name("edit-delete-symbolic", Gtk.IconSize.BUTTON);;
 		dismissbtn.set_image(dissImage);
 		  dismissbtn.clicked.connect(()=>{
-			remove_index_from(copy);
-			row_activated_flag = true;
-			addRow(2);
+			remove_index_from_history(copy);
+		    row_activated_flag = true;
+	        realContent.remove(listbax);
+	        listbax = new Gtk.ListBox();
+			if (history.length>0){
+			    add_marked_text_in_loop(copy);
+		    } else {
+		        clip_curr_empty();
+		    }
+		    realContent.add(listbax);
+		    update_pager();
+		    show_all_except();
 		  });
 		btnlist.add(dismissbtn);
 		listbax.add(btnlist);
@@ -491,18 +499,19 @@ namespace ClipboardManagerApplet {
 
 	public static void update_history(string item){
 	    string[] newHistory = {};
-        if(!primode){
-            newHistory += text;
-            for (int i=0; i<history.length; i++){
-                newHistory += history[i];
-            }
-			history = newHistory;
-		}
+        newHistory += text;
+        for (int i=0; i<history.length; i++){
+            newHistory += history[i];
+        }
+		history = newHistory;
+		if (history.length >=1 && !primode){
+	        indicatorIcon.set_from_icon_name("clipboard-text-outline-symbolic", Gtk.IconSize.MENU);
+	    }
 		if (history.length > HISTORY_LENGTH){
 			if(history.length == HISTORY_LENGTH+1){
-				remove_index_from(HISTORY_LENGTH);
+				remove_index_from_history(HISTORY_LENGTH);
 			} else{
-		  		remove_range_from(HISTORY_LENGTH-1);
+		  		remove_range_from_history(HISTORY_LENGTH-1);
 			}
 		}
 		if (Applet.savehistory){
@@ -510,7 +519,7 @@ namespace ClipboardManagerApplet {
 		}
 	}
 	
-	public static void remove_index_from(int idx){
+	public static void remove_index_from_history(int idx){
 	    string[] newArray = {};
         for (int i=0; i<history.length; i++){
             if (i!=idx){
@@ -519,13 +528,23 @@ namespace ClipboardManagerApplet {
 		history = newArray;
 	}
 	
-	public static void remove_range_from(int idx1){
+	public static void remove_range_from_history(int idx){
 	    string[] newArray = {};
         for (int i=0; i<history.length; i++){
-            if (i<idx1){
+            if (i<idx){
                 newArray += history[i];
         }}
 		history = newArray;
+	}
+	
+	public static void delete_duplicates_from_history(string text){
+        for (int j = 0; j < history.length; j++){
+            if(text == history[j]){
+              remove_index_from_history(j);
+              break;
+            }
+        }
+        update_history(text);
 	}
 	
 	public static void show_all_except(){
@@ -546,6 +565,16 @@ namespace ClipboardManagerApplet {
 		pagerCont.set_sensitive (false);
 	}
 
+	public static void clip_curr_empty(){
+		indicatorIcon.set_from_icon_name("clipboard-outline-symbolic", Gtk.IconSize.MENU);
+	    string text = "Clipboard is Currently Empty!";
+	    Label clipLabel = new Label(text);
+	    Button clipButton = new Button();
+	    clipButton.add(clipLabel);
+	    clipButton.set_sensitive (false);
+	    listbax.add(clipButton);
+	}
+	
 	public static void on_search_activate (Gtk.Entry entry) {
 		realContent.remove(listbax);
 		listbax = new Gtk.ListBox();
@@ -553,10 +582,10 @@ namespace ClipboardManagerApplet {
 		int j=0;
 		for (int i=0;i<history.length;i++){
 			if (history[i].contains(gotText)){
-				add_loop(i);
+				add_element_to_listbax(i);
 				j++;
 			} else if(!searchsensitive && history[i].down().contains(gotText.down())){
-				add_loop(i);
+				add_element_to_listbax(i);
 				j++;
 			}
 		}
@@ -570,15 +599,20 @@ namespace ClipboardManagerApplet {
 		row_activated_flag = true;
 		string text = history[copy];
 		ClipboardManager.set_text(text);
+		if (primode){
+		    realContent.remove(listbax);
+		    listbax = new Gtk.ListBox();
+            add_marked_text_in_loop(copy);
+		    realContent.add(listbax);
+		    update_pager();
+		    show_all_except();
+		}
+		text = text.replace("\t", "  ");
 		if (text.length > 250){
 		    text = text.slice(0,250) + "...";
 		}
 		if (sendNotifications){
-		    try{
-		        Process.spawn_command_line_async("notify-send Copied! '"+ text + "' --icon clipboard-text-outline-symbolic");
-	        } catch (Error e) {
-		        error ("Error: %s", e.message);
-	        }
+		    ClipboardManager.send_notification_now("Copied!", text);
 		}
 		Applet.popover.hide();
 		specialMark = copy;
@@ -635,4 +669,3 @@ public void peas_register_types(TypeModule module) {
 	var objmodule = module as Peas.ObjectModule;
 	objmodule.register_extension_type(typeof(Budgie.Plugin), typeof(ClipboardManagerApplet.Plugin));
 }
-
