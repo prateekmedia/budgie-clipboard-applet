@@ -443,11 +443,15 @@ namespace ClipboardManagerApplet {
 	}
 	
 	public static void add_marked_text_in_loop(int copy = 0){
-        specialMark = copy;
-        row_activated_flag = false;
-        for (int j = 0; j < history.length; j++) {
-          add_element_to_listbax(j);
-        }
+	    if (history.length>0){
+            specialMark = copy;
+            row_activated_flag = false;
+            for (int j = 0; j < history.length; j++) {
+              add_element_to_listbax(j);
+            }
+	    } else {
+	        clip_curr_empty();
+	    }
     }
     
 	public static void add_element_to_listbax(int j){
@@ -484,11 +488,7 @@ namespace ClipboardManagerApplet {
 		    row_activated_flag = true;
 	        realContent.remove(listbax);
 	        listbax = new Gtk.ListBox();
-			if (history.length>0){
-			    add_marked_text_in_loop(copy);
-		    } else {
-		        clip_curr_empty();
-		    }
+		    add_marked_text_in_loop(copy);
 		    realContent.add(listbax);
 		    update_pager();
 		    show_all_except();
@@ -565,9 +565,11 @@ namespace ClipboardManagerApplet {
 		pagerCont.set_sensitive (false);
 	}
 
-	public static void clip_curr_empty(){
-		indicatorIcon.set_from_icon_name("clipboard-outline-symbolic", Gtk.IconSize.MENU);
-	    string text = "Clipboard is Currently Empty!";
+	public static void clip_curr_empty(string emptyText = "Clipboard is Currently Empty!"){
+	    string text = emptyText;
+	    if (emptyText == "Clipboard is Currently Empty!"){
+	        indicatorIcon.set_from_icon_name("clipboard-outline-symbolic", Gtk.IconSize.MENU);
+	    }
 	    Label clipLabel = new Label(text);
 	    Button clipButton = new Button();
 	    clipButton.add(clipLabel);
@@ -589,7 +591,7 @@ namespace ClipboardManagerApplet {
 				j++;
 			}
 		}
-		if (j==0){ listbax.add(new Label("No Results found!")); }
+		if (j==0){ clip_curr_empty("No Results found!"); }
 		realContent.add(listbax);
 		update_pager();
 		show_all_except();
