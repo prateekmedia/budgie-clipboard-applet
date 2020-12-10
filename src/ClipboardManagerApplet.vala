@@ -669,3 +669,4 @@ public void peas_register_types(TypeModule module) {
 	var objmodule = module as Peas.ObjectModule;
 	objmodule.register_extension_type(typeof(Budgie.Plugin), typeof(ClipboardManagerApplet.Plugin));
 }
+
