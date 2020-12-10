@@ -23,22 +23,25 @@ A clipboard manager applet that can help you to store and manage clipboard conte
   
 ## Dependencies for Building from source
 
-### *For Solus* 
+<details><summary><b>For Solus</b></summary>
 
 ```
 $ sudo eopkg it budgie-desktop-devel vala -c system.devel
 ```
-
-### *For Debian/ Ubuntu based Distro* 
+</details>
+<details><summary><b>For Debian/ Ubuntu based Distro</b></summary>
 
 ```
 $ sudo apt install budgie-core-dev meson valac
 ```
+</details>
+<details><summary><b>For Arch based Distro</b></summary>
 
-### *For Arch based Distro*
 ```
 $ sudo pacman -S budgie-desktop
 ```
+</details>
+
 
 ## Building from source / Updating the applet
 Download the zip & then run from the extracted repo's folder:
@@ -55,7 +58,7 @@ $ meson --buildtype plain --prefix=/usr --libdir=/usr/lib
 $ sudo ninja install
 ```
 
-## For reinstalling
+<details><summary><h2>For reinstalling / Uninstalling</h2></summary>
 If you want to reinstall the applet, then run from the extracted repo's folder:
 
 ```
@@ -65,6 +68,7 @@ Likewise the applet can be **uninstalled** by using
 ```
 $ sudo ninja -C build uninstall
 ```
+</details>
 
 ### Debug the applet
 ```
