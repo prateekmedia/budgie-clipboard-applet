@@ -83,7 +83,7 @@ using Gtk;
             FileUtils.get_contents (path, out read);
             return read.split (">?:?<<,LineBreak:)><:?>");
         } catch (FileError error) {
-            string[] welcome = {"Welcome to Clipboard Manager.", "Your Clips will be saved."};
+            string[] welcome = {_("Welcome to Clipboard Manager"), _("Your Clips will be saved Automatically")};
             return welcome;
         }
     }
@@ -139,10 +139,11 @@ namespace ClipboardManagerApplet {
   public class ClipboardManagerSettings: Gtk.Grid {
     public ClipboardManagerSettings(GLib.Settings? settings) {
         // Gtk stuff, widgets etc. here
-         monitor_clipboard_selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
+        set_row_spacing(10);
+        monitor_clipboard_selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
         
         //History Label
-        Label historyLabel = new Gtk.Label("History Size");
+        Label historyLabel = new Gtk.Label(_("History Size"));
         historyLabel.set_halign (Gtk.Align.START);
         historyLabel.set_hexpand (true);
         SpinButton historySpin = new Gtk.SpinButton.with_range (2, 100, 1);
@@ -151,7 +152,7 @@ namespace ClipboardManagerApplet {
         historySpin.set_hexpand (true);
 
         //Get Selection on Clipboard
-        Label selClipLabel = new Gtk.Label("Get Selection to Clipboard");
+        Label selClipLabel = new Gtk.Label(_("Get Selection to Clipboard"));
         selClipLabel.set_halign (Gtk.Align.START);
         selClipLabel.set_hexpand (true);
         Switch selClipTggle = new Gtk.Switch();
@@ -160,7 +161,7 @@ namespace ClipboardManagerApplet {
         selClipTggle.set_hexpand (true);
 
         //Copy selection to Clipboard
-        Label copySelLabel = new Gtk.Label("Copy Selection to Clipboard");
+        Label copySelLabel = new Gtk.Label(_("Copy Selection to Clipboard"));
         copySelLabel.set_halign (Gtk.Align.START);
         copySelLabel.set_hexpand (true);
         Switch copySelTggle = new Gtk.Switch();
@@ -175,7 +176,7 @@ namespace ClipboardManagerApplet {
         
 
         //Case Sensitive Search
-        Label caseSenLabel = new Gtk.Label("Case Sensitive Search");
+        Label caseSenLabel = new Gtk.Label(_("Case Sensitive Search"));
         caseSenLabel.set_halign (Gtk.Align.START);
         caseSenLabel.set_hexpand (true);
         Switch caseSenTggle = new Gtk.Switch();
@@ -185,7 +186,7 @@ namespace ClipboardManagerApplet {
         
         
         //Save History to Schemas
-        Label saveHistLabel = new Gtk.Label("Save History to File");
+        Label saveHistLabel = new Gtk.Label(_("Save History to File"));
         saveHistLabel.set_halign (Gtk.Align.START);
         saveHistLabel.set_hexpand (true);
         Switch saveHistTggle = new Gtk.Switch();
@@ -195,7 +196,7 @@ namespace ClipboardManagerApplet {
         
         
         //Clipboard height Label
-        Label heightLabel = new Gtk.Label("Clipboard Height");
+        Label heightLabel = new Gtk.Label(_("Clipboard Height"));
         heightLabel.set_halign (Gtk.Align.START);
         heightLabel.set_hexpand (true);
         SpinButton heightSpin = new Gtk.SpinButton.with_range (50, 2000, 1);
@@ -204,8 +205,8 @@ namespace ClipboardManagerApplet {
         heightSpin.set_hexpand (true);
         
         //Reset Btn Label
-        var resetBtn = new Gtk.Button.with_label("Restore Defaults");
-        resetBtn.set_halign (Gtk.Align.START);
+        var resetBtn = new Gtk.Button.with_label(_("Restore Defaults"));
+        resetBtn.set_halign (Gtk.Align.CENTER);
         resetBtn.set_hexpand (true);
         
         attach (historyLabel,	0, 0, 1, 1);
@@ -297,19 +298,18 @@ namespace ClipboardManagerApplet {
 	public static Image indicatorIcon;
 	public static Clipboard clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD);
 	public static GLib.Settings settings = Applet.settings;
-	public static Box mainContent = new Box(Gtk.Orientation.VERTICAL, 0);
+	public static Box mainContent = new Box(Gtk.Orientation.VERTICAL, 4);
 	public static Box search_container = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
 	public static Entry search_box = new Gtk.Entry ();
 	public static ListBox scrbox = new ListBox();
 	public static ScrolledWindow realContent = new Gtk.ScrolledWindow (null,null);
-	public static Separator spacerCont = new Gtk.Separator(Gtk.Orientation.HORIZONTAL);
 	public static Box privateMode = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
 	public static bool primode = settings.get_boolean("privatemode");
 	public static Box notifyMe = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
 	public static bool sendNotifications = settings.get_boolean("notifications");
 	public static ListBox setContent = new ListBox();
 	public static Box hBox = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
-	public static Box settingsBox = new Box(Gtk.Orientation.VERTICAL, 0);
+	public static Box settingsBox = new Box(Gtk.Orientation.VERTICAL, 8);
 	public static Button pagerCont = new Gtk.Button ();
 	public static Button setDropdown = new Gtk.Button ();
 	public static bool dropCount = false;
@@ -353,7 +353,6 @@ namespace ClipboardManagerApplet {
 		scrbox.add(realContent);
 		mainContent.add(search_container);
 		mainContent.add(scrbox);
-		mainContent.add(spacerCont);
 		mainContent.add(setContent);   
 
 		hBox.add(pagerCont);
@@ -368,8 +367,10 @@ namespace ClipboardManagerApplet {
 
 		setContent.add(hBox);
 		setContent.add(settingsBox);
+		
+		update_pager();
 
-		string emptyCliptext = "Clear All ";
+		string emptyCliptext = _("Clear All");
 		Button emptyClip = new Button();
 		emptyClip.clicked.connect(remove_all_rows);
 		Label emptyClipLabel = new Label(@"<b>$emptyCliptext</b>");
@@ -378,9 +379,7 @@ namespace ClipboardManagerApplet {
 		emptyClip.add(emptyClipLabel);
 		settingsBox.add(emptyClip);
 
-		update_pager();
-
-		Label privateModeLabel = new Gtk.Label("   Private Mode");
+		Label privateModeLabel = new Gtk.Label("   " + _("Private Mode"));
 		privateModeLabel.set_halign (Gtk.Align.START);
 		privateModeLabel.set_hexpand (true);
 		privateModeTggle.set_active(primode);
@@ -401,13 +400,13 @@ namespace ClipboardManagerApplet {
             return false;
 		});
 
-		privateMode.set_tooltip_text("Enabling this will stop Clipboard Manager to save any Clips");
+		privateMode.set_tooltip_text(_("Enabling this will stop Clipboard Manager to save any Clips"));
 		privateMode.add(privateModeLabel);
 		privateMode.add(privateModeTggle);
 		settingsBox.add(privateMode);
 		
 		
-		Label notifyMeLabel = new Gtk.Label("   Notifications");
+		Label notifyMeLabel = new Gtk.Label("   " + _("Notifications"));
 		notifyMeLabel.set_halign (Gtk.Align.START);
 		notifyMeLabel.set_hexpand (true);
 		Switch notifyMeTggle = new Gtk.Switch();
@@ -422,12 +421,12 @@ namespace ClipboardManagerApplet {
             return false;
 		});
 
-		notifyMe.set_tooltip_text("Enabling this will Notify you about every clips you copy.");
+		notifyMe.set_tooltip_text(_("Enabling this will Notify you about every clips you copy"));
 		notifyMe.add(notifyMeLabel);
 		notifyMe.add(notifyMeTggle);
 		settingsBox.add(notifyMe);
 
-		search_box.set_placeholder_text("Search Clipboard....");
+		search_box.set_placeholder_text(_("Search Clipboard History")+"…");
 		search_box.set_hexpand(true);
 		search_box.changed.connect(()=>{
 			text = search_box.get_text();
@@ -435,8 +434,7 @@ namespace ClipboardManagerApplet {
 			 	on_search_activate(search_box);
 			}
 			else{
-		        realContent.remove(listbax);
-		        listbax = new Gtk.ListBox();
+		        remove_and_create_listbax();
                 add_marked_text_in_loop();
 		        realContent.add(listbax);
 		        update_pager();
@@ -450,8 +448,7 @@ namespace ClipboardManagerApplet {
 	  if (!row_activated_flag){
 		text = ClipboardManager.get_clipboard_text();
 	  }
-      realContent.remove(listbax);
-	  listbax = new Gtk.ListBox ();
+	  remove_and_create_listbax();
 	  if (ttype==0) { text = ClipboardManager.get_clipboard_text(); } 
 	  else if (ttype ==1 ) { text = ClipboardManager.get_selected_text(); } 
 	  else if (ttype ==2) { 
@@ -477,8 +474,7 @@ namespace ClipboardManagerApplet {
 
 	public static void remove_all_rows(){
 		if (history.length >0){
-			realContent.remove(listbax);
-			listbax = new Gtk.ListBox ();
+		    remove_and_create_listbax();
 			remove_range_from_history(0);
 			indicatorIcon.set_from_icon_name("clipboard-outline-symbolic", Gtk.IconSize.MENU);
 			Applet.popover.hide();
@@ -538,8 +534,7 @@ namespace ClipboardManagerApplet {
 		  dismissbtn.clicked.connect(()=>{
 			remove_index_from_history(copy);
 		    row_activated_flag = true;
-	        realContent.remove(listbax);
-	        listbax = new Gtk.ListBox();
+		    remove_and_create_listbax();
 		    add_marked_text_in_loop();
 		    realContent.add(listbax);
 		    update_pager();
@@ -547,6 +542,17 @@ namespace ClipboardManagerApplet {
 		  });
 		btnlist.add(dismissbtn);
 		listbax.add(btnlist);
+	}
+	
+	public static void remove_and_create_listbax(){
+        int z = 0;
+        realContent.@foreach((widget)=>{
+          z++;
+        });
+        if (z !=0){
+            realContent.remove(listbax);
+        }
+        listbax = new Gtk.ListBox ();
 	}
 
 	public static void update_history(string? text = null){
@@ -619,9 +625,9 @@ namespace ClipboardManagerApplet {
 		pagerCont.set_sensitive (false);
 	}
 
-	public static void clip_curr_empty(string emptyText = "Clipboard is Currently Empty!"){
-	    string text = emptyText;
-	    if (emptyText == "Clipboard is Currently Empty!"){
+	public static void clip_curr_empty(string emptyText = "No Clipboard Items Found"){
+	    string text = _(emptyText);
+	    if (emptyText.contains("Found")){
 	        indicatorIcon.set_from_icon_name("clipboard-outline-symbolic", Gtk.IconSize.MENU);
 	    }
 	    Label clipLabel = new Label(text);
@@ -632,8 +638,7 @@ namespace ClipboardManagerApplet {
 	}
 	
 	public static void on_search_activate (Gtk.Entry entry) {
-		realContent.remove(listbax);
-		listbax = new Gtk.ListBox();
+	    remove_and_create_listbax();
 		string gotText = entry.get_text();
 		int j=0;
 		for (int i=0;i<history.length;i++){
@@ -645,7 +650,7 @@ namespace ClipboardManagerApplet {
 				j++;
 			}
 		}
-		if (j==0){ clip_curr_empty("No Results found!"); }
+		if (j==0){ clip_curr_empty("Try changing search terms")+"."; }
 		realContent.add(listbax);
 		update_pager();
 		show_all_except();
@@ -656,8 +661,7 @@ namespace ClipboardManagerApplet {
 		string text = history[copy];
 		ClipboardManager.set_text(text);
 		if (primode){
-		    realContent.remove(listbax);
-		    listbax = new Gtk.ListBox();
+		    remove_and_create_listbax();
             add_marked_text_in_loop(copy);
 		    realContent.add(listbax);
 		    update_pager();
@@ -668,7 +672,7 @@ namespace ClipboardManagerApplet {
 		    text = text.slice(0,250) + "...";
 		}
 		if (sendNotifications){
-		    ClipboardManager.send_notification_now("Copied!", text);
+		    ClipboardManager.send_notification_now(_("Copied")+"!", text);
 		}
 		Applet.popover.hide();
 		specialMark = copy;

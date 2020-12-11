@@ -1,6 +1,6 @@
 i18n = import('i18n')
 
-langs = ['nl_NL']
+langs = ['en_GB','hi']
 
 # Stolen from gnome-twitch
 i18n.gettext('template', languages: langs, args: [
