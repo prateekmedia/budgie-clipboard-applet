@@ -4,7 +4,7 @@
 
 A clipboard manager applet that can help you to store and manage clipboard content. Made with ♥️ for budgie desktop.
 
-<p align="center"><img src="https://user-images.githubusercontent.com/41370460/101914592-7ec29700-3bea-11eb-8cd5-d1ede0a2c366.png" alt="Clipboard manager Logo"/></p>
+<p align="center"><img src="https://raw.githubusercontent.com/prateekmedia/budgie-clipboard-applet/main/icons/screenshot.png" alt="Clipboard manager Logo"/></p>
 
 ## FEATURES
 - [x] Automatically save copied / selected text to Clipboard Manager
@@ -20,7 +20,7 @@ A clipboard manager applet that can help you to store and manage clipboard conte
 - [x] Option to restore defaults if you have messed up some of the settings
 
 ## CONTRIBUTION
--  Pull requests are welcome whether it be translations, adding any useful feature / solving any bugs
+-  Pull requests are welcome whether it be [translations](https://github.com/prateekmedia/budgie-clipboard-applet/releases/tag/v0.9.8), adding any useful feature / solving any bugs
 -  You can use `Issues` tab for reporting issues
   
 ## Dependencies for Building from source
