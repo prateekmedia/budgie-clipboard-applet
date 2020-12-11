@@ -22,7 +22,7 @@ msgid "Welcome to Clipboard Manager"
 msgstr ""
 
 #: src/ClipboardManagerApplet.vala:86
-msgid "Welcome to Clipboard Manager"
+msgid "Your Clips will be saved Automatically"
 msgstr ""
 
 #: src/ClipboardManagerApplet.vala:146
