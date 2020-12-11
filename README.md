@@ -8,44 +8,40 @@ A clipboard manager applet that can help you to store and manage clipboard conte
 
 ## FEATURES
 - [x] Automatically save copied / selected text to Clipboard Manager
-- [x] Clear all option
+- [x] Save up to 100 Clips
 - [x] Private mode option that let's you copy/select anything without saving it to Clipboard manager
 - [x] Remove icon next to every clip, that let's you remove any clip you  want
-- [x] Save up to 100 Clips
 - [x] Search as you type to find the clip that you want
-- [x] Automatically save clips to schemas so that they are not lost after restart
+- [x] Clear all option
+- [x] Automatically save clips to a file so that they are not lost after restart
 - [x] Tooltip in every copied item that let's you distinguish it from others
 - [x] Notification support for copied items from applet
+- [x] Multiple options to configure applet using Budgie desktop Settings
 - [x] Option to restore defaults if you have messed up some of the settings
 
 ## CONTRIBUTION
--  Pull requests are welcome whether it be translations, adding any useful feature / solves any bug or doing things from [TODO](#todo)
+-  Pull requests are welcome whether it be translations, adding any useful feature / solving any bugs
 -  You can use `Issues` tab for reporting issues
   
 ## Dependencies for Building from source
 
-<details><summary><b>For Solus</b></summary>
-
+**For Solus**
 ```
 $ sudo eopkg it budgie-desktop-devel vala -c system.devel
 ```
-</details>
-<details><summary><b>For Debian/ Ubuntu based Distro</b></summary>
 
+**For Debian/ Ubuntu based Distro**
 ```
 $ sudo apt install budgie-core-dev meson valac
 ```
-</details>
-<details><summary><b>For Arch based Distro</b></summary>
-
+**For Arch based Distro**
 ```
 $ sudo pacman -S budgie-desktop
 ```
-</details>
 
 
 ## Building from source / Updating the applet
-Download the zip & then run from the extracted repo's folder:
+Download the [zip](https://github.com/prateekmedia/budgie-clipboard-applet/releases/latest) & then run from the extracted repo's folder:
 
 ```
 $ mkdir build; cd build
@@ -60,7 +56,7 @@ $ sudo ninja install
 ```
 
 <h2>For reinstalling / Uninstalling</h2>
-If you want to reinstall the applet, then run from the extracted repo's folder:
+If you want to reinstall the applet, then run this from the extracted repo's folder:
 
 ```
 $ sudo ninja -C build install
@@ -76,5 +72,4 @@ $ budgie-panel --replace &!
 ```
 
 ## TODO
-- [ ] Study [davidmhewitt / clipped](https://github.com/davidmhewitt/clipped) for features/solving issues
 - [ ] Solve [Issues](https://github.com/prateekmedia/budgie-clipboard-applet/issues)
