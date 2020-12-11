@@ -22,10 +22,10 @@
             <description>Whether to save history to schemas or not.</description>
             <default>true</default>
         </key>
-        <key type="as" name="history">
-            <summary>History of the clipboard</summary>
-            <description>It stores history of the clipboard, so that if user logs out or restart then it is still stored their.</description>
-            <default>[]</default>
+        <key type="s" name="custompath">
+            <summary>Custom Path where History of the clipboard is stored.</summary>
+            <description>It stores the custom path of the history of the clipboard</description>
+            <default>""</default>
         </key>
         <key type="i" name="historylength">
             <summary>History Length</summary>
