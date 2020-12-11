@@ -1,9 +1,10 @@
 <p align="center"><a href="#budgie-clipboard-manager"><img src="https://raw.githubusercontent.com/prateekmedia/budgie-clipboard-applet/main/icons/clipmgr.png" height=80px alt="Clipboard manager Logo"/></a></p>
 <h1 align="center">Budgie Clipboard Manager</h1>
-<p align="center"><b>v0.9.75</b></p>
+<p align="center"><b>v0.9.8</b></p>
 
 A clipboard manager applet that can help you to store and manage clipboard content. Made with ♥️ for budgie desktop.
 
+<p align="center"><img src="https://user-images.githubusercontent.com/41370460/101914592-7ec29700-3bea-11eb-8cd5-d1ede0a2c366.png" alt="Clipboard manager Logo"/></p>
 
 ## FEATURES
 - [x] Automatically save copied / selected text to Clipboard Manager
@@ -18,7 +19,7 @@ A clipboard manager applet that can help you to store and manage clipboard conte
 - [x] Option to restore defaults if you have messed up some of the settings
 
 ## CONTRIBUTION
--  Pull requests are welcome that solve [TODO](#todo) or add any useful feature / solves any bug
+-  Pull requests are welcome whether it be translations, adding any useful feature / solves any bug or doing things from [TODO](#todo)
 -  You can use `Issues` tab for reporting issues
   
 ## Dependencies for Building from source
@@ -58,7 +59,7 @@ $ meson --buildtype plain --prefix=/usr --libdir=/usr/lib
 $ sudo ninja install
 ```
 
-<details><summary><h2>For reinstalling / Uninstalling</h2></summary>
+<h2>For reinstalling / Uninstalling</h2>
 If you want to reinstall the applet, then run from the extracted repo's folder:
 
 ```
@@ -68,7 +69,6 @@ Likewise the applet can be **uninstalled** by using
 ```
 $ sudo ninja -C build uninstall
 ```
-</details>
 
 ### Debug the applet
 ```
