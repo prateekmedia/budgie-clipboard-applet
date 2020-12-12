@@ -650,7 +650,7 @@ namespace ClipboardManagerApplet {
 				j++;
 			}
 		}
-		if (j==0){ clip_curr_empty("Try changing search terms")+"."; }
+		if (j==0){ clip_curr_empty(_("Try changing search terms")+"."); }
 		realContent.add(listbax);
 		update_pager();
 		show_all_except();
