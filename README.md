@@ -1,8 +1,9 @@
 <p align="center"><a href="#budgie-clipboard-manager"><img src="https://raw.githubusercontent.com/prateekmedia/budgie-clipboard-applet/main/icons/clipmgr.png" height=80px alt="Clipboard manager Logo"/></a></p>
 <h1 align="center">Budgie Clipboard Manager</h1>
-<p align="center"><b>v0.9.8</b></p>
+<p align="center"><b>v0.9.81</b></p>
 
-A clipboard manager applet that can help you to store and manage clipboard content. Made with ♥️ for budgie desktop.
+A clipboard manager applet that can help you to store and manage clipboard content. 
+***Made with ♥️ for budgie desktop.***
 
 <p align="center"><img src="https://raw.githubusercontent.com/prateekmedia/budgie-clipboard-applet/main/icons/screenshot.png" alt="Clipboard manager Logo"/></p>
 
@@ -22,7 +23,9 @@ A clipboard manager applet that can help you to store and manage clipboard conte
 ## CONTRIBUTION
 -  Pull requests are welcome whether it be [translations](https://github.com/prateekmedia/budgie-clipboard-applet/releases/tag/v0.9.8), adding any useful feature / solving any bugs
 -  You can use `Issues` tab for reporting issues
-  
+-  Special thanks to [all the people](https://github.com/prateekmedia/budgie-clipboard-applet/graphs/contributors) who contributed to this project.
+
+
 ## Dependencies for Building from source
 
 **For Solus**
@@ -41,7 +44,7 @@ $ sudo pacman -S budgie-desktop
 
 
 ## Building from source / Updating the applet
-Download the [zip](https://github.com/prateekmedia/budgie-clipboard-applet/releases/latest) & then run from the extracted repo's folder:
+Download the [zip](https://github.com/prateekmedia/budgie-clipboard-applet/archive/main.zip) & then run from the extracted repo's folder:
 
 ```
 $ mkdir build; cd build
@@ -55,7 +58,7 @@ $ meson --buildtype plain --prefix=/usr --libdir=/usr/lib
 $ sudo ninja install
 ```
 
-<h2>For reinstalling / Uninstalling</h2>
+## For reinstalling / Uninstalling
 If you want to reinstall the applet, then run this from the extracted repo's folder:
 
 ```
