@@ -23,10 +23,18 @@ A clipboard manager applet that can help you to store and manage clipboard conte
 ## CONTRIBUTION
 -  Pull requests are welcome whether it be [translations](https://github.com/prateekmedia/budgie-clipboard-applet/releases/tag/v0.9.8), adding any useful feature / solving any bugs
 -  You can use `Issues` tab for reporting issues
--  Special thanks to [all the people](https://github.com/prateekmedia/budgie-clipboard-applet/graphs/contributors) who contributed to this project.
+-  Special thanks to [all the amazing people's](https://github.com/prateekmedia/budgie-clipboard-applet/graphs/contributors) who contributed to this project.
+
+## Direct Install
+**For Debian/ Ubuntu based Distro**
+```
+sudo add-apt-repository ppa:ubuntubudgie/backports
+sudo apt install budgie-clipboard-applet
+```
 
 
 ## Dependencies for Building from source
+These dependencies are required if you want to [Build From Source](#Building-from-source)
 
 **For Solus**
 ```
@@ -43,7 +51,7 @@ $ sudo pacman -S budgie-desktop
 ```
 
 
-## Building from source / Updating the applet
+## Building from source
 Download the [zip](https://github.com/prateekmedia/budgie-clipboard-applet/archive/main.zip) & then run from the extracted repo's folder:
 
 ```
@@ -57,6 +65,7 @@ $ meson --buildtype plain --prefix=/usr --libdir=/usr/lib
 ```
 $ sudo ninja install
 ```
+**NOTE** : *You can also update the applet by following the above 3 step process*
 
 ## For reinstalling / Uninstalling
 If you want to reinstall the applet, then run this from the extracted repo's folder:
