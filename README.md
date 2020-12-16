@@ -1,6 +1,6 @@
 <p align="center"><a href="#budgie-clipboard-manager"><img src="https://raw.githubusercontent.com/prateekmedia/budgie-clipboard-applet/main/images/clipmgr.png" height=80px alt="Clipboard manager Logo"/></a></p>
 <h1 align="center">Budgie Clipboard Manager</h1>
-<p align="center"><b>v0.9.85</b></p>
+<p align="center"><b>v0.9.9</b></p>
 
 A clipboard manager applet that can help you to store and manage clipboard content. 
 ***Made with ♥️ for budgie desktop.***
@@ -44,7 +44,7 @@ $ sudo eopkg it budgie-desktop-devel vala -c system.devel libnotify-devel
 
 **For Debian/ Ubuntu based Distro**
 ```
-$ sudo apt install budgie-core-dev meson valac libnotify
+$ sudo apt install budgie-core-dev meson valac libnotify-dev
 ```
 **For Arch based Distro**
 ```
