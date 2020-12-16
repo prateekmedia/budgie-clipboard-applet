@@ -1,6 +1,8 @@
 <p align="center"><a href="#budgie-clipboard-manager"><img src="https://raw.githubusercontent.com/prateekmedia/budgie-clipboard-applet/main/images/clipmgr.png" height=80px alt="Clipboard manager Logo"/></a></p>
 <h1 align="center">Budgie Clipboard Manager</h1>
-<p align="center"><b>v0.9.9</b></p>
+<p align="center">
+<a href="https://github.com/prateekmedia/budgie-clipboard-applet/releases"><img alt="GitHub release" src="https://img.shields.io/github/v/release/prateekmedia/budgie-clipboard-applet"/></a> <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/prateekmedia/budgie-clipboard-applet?color=blue"/></a>
+</p>
 
 A clipboard manager applet that can help you to store and manage clipboard content. 
 ***Made with ♥️ for budgie desktop.***
