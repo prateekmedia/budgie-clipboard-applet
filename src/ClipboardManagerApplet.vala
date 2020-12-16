@@ -11,10 +11,6 @@ using Gtk;
  */
 
  public class ClipboardManager : Object {
-    /*
-    * Here we keep the (possibly) shared stuff, or general functions, to
-    * keep the main code clean and readable
-    */
     private static Gtk.Clipboard monitor_clipboard;
     private static Gtk.Clipboard monitor_clipboard_selection;
 
@@ -23,60 +19,49 @@ using Gtk;
         monitor_clipboard_selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
         bool select_clip = ClipboardManagerApplet.Applet.settings.get_boolean("selectclip");
         if(!ClipboardManagerApplet.ClipboardManagerPopover.primode){
-            monitor_clipboard.owner_change.connect (do_this_with_clipboard_text);
+            monitor_clipboard.owner_change.connect (do_this_with_text);
             if(select_clip){
-                monitor_clipboard_selection.owner_change.connect (do_this_with_selected_text);
+                monitor_clipboard_selection.owner_change.connect (() => do_this_with_text(true));
             } else {
-                monitor_clipboard_selection.owner_change.disconnect (do_this_with_selected_text);
+                monitor_clipboard_selection.owner_change.disconnect (() => do_this_with_text(true));
             }
         } else {
-            monitor_clipboard.owner_change.disconnect (do_this_with_clipboard_text);
-            monitor_clipboard_selection.owner_change.disconnect (do_this_with_selected_text);
-            
+            monitor_clipboard.owner_change.disconnect (do_this_with_text);
+            monitor_clipboard_selection.owner_change.disconnect (() => do_this_with_text(true));
         }
         return false;
     }
 
-    public static string get_selected_text () {
-        var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
-        string text = clipboard.wait_for_text ();
-        return text;
+    public static string get_text (bool selectedOne = false) {
+        var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
+        if (selectedOne){
+                 clipboard = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
+        }
+        return clipboard.wait_for_text ();
     }
 
-    public static string get_clipboard_text () {
-        var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
-        string text = clipboard.wait_for_text ();
-        return text;
-    }
     public static void set_text (string? item) {
         var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
         if (item != null &&item != clipboard.wait_for_text ()){
-        clipboard.set_text (item, item.length);
+                clipboard.set_text (item, item.length);
         }
     }
 
-    public static void do_this_with_clipboard_text () {
+    public static void do_this_with_text (bool selectedOne = false) {
         string[] history = ClipboardManagerApplet.ClipboardManagerPopover.history;
-        string text = get_clipboard_text();
+        string text = get_text(selectedOne);
+        var num = 0;
         if (text != null && text.chug().length != 0){
-          if( text !=history[0]){
-            ClipboardManagerApplet.ClipboardManagerPopover.addRow(0);
-        }}
-    }
-
-    public static void do_this_with_selected_text () {
-        string[]  history = ClipboardManagerApplet.ClipboardManagerPopover.history;
-        string text = get_selected_text();
-        if (text != null && text.chug().length != 0 ){
-          if(text.contains(history[0])){
+          if(selectedOne && text.contains(history[0])){
             ClipboardManagerApplet.ClipboardManagerPopover.remove_index_from_history(0);
           }
+          if (selectedOne){num = 1;}
           if( text !=history[0]){
-            ClipboardManagerApplet.ClipboardManagerPopover.addRow(1);
+            ClipboardManagerApplet.ClipboardManagerPopover.addRow(num);
           }
         }
     }
-    
+
     public static string[] readfile (string path) {
         try {
             string read;
@@ -456,11 +441,11 @@ namespace ClipboardManagerApplet {
 
 	public static void addRow(int ttype){
 	  if (!row_activated_flag){
-		text = ClipboardManager.get_clipboard_text();
+		text = ClipboardManager.get_text();
 	  }
 	  remove_and_create_listbax();
-	  if (ttype==0) { text = ClipboardManager.get_clipboard_text(); } 
-	  else if (ttype ==1 ) { text = ClipboardManager.get_selected_text(); } 
+	  if (ttype==0) { text = ClipboardManager.get_text(); } 
+	  else if (ttype ==1 ) { text = ClipboardManager.get_text(true); } 
 	  else if (ttype ==2) { 
 		if (history.length == 0 && (text == null || text.chug().length ==0)){
 		    ttyped = 0;
