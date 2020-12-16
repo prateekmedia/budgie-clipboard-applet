@@ -19,15 +19,15 @@ using Gtk;
         monitor_clipboard_selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
         bool select_clip = ClipboardManagerApplet.Applet.settings.get_boolean("selectclip");
         if(!ClipboardManagerApplet.ClipboardManagerPopover.primode){
-            monitor_clipboard.owner_change.connect (do_this_with_text);
+            monitor_clipboard.owner_change.connect (for_clipboard_text);
             if(select_clip){
-                monitor_clipboard_selection.owner_change.connect (() => do_this_with_text(true));
+                monitor_clipboard_selection.owner_change.connect (for_selected_text);
             } else {
-                monitor_clipboard_selection.owner_change.disconnect (() => do_this_with_text(true));
+                monitor_clipboard_selection.owner_change.disconnect (for_selected_text);
             }
         } else {
-            monitor_clipboard.owner_change.disconnect (do_this_with_text);
-            monitor_clipboard_selection.owner_change.disconnect (() => do_this_with_text(true));
+            monitor_clipboard.owner_change.disconnect (for_clipboard_text);
+            monitor_clipboard_selection.owner_change.disconnect (for_selected_text);
         }
         return false;
     }
@@ -47,18 +47,23 @@ using Gtk;
         }
     }
 
+    public static void for_clipboard_text(){do_this_with_text();}
+    
+    public static void for_selected_text(){do_this_with_text(true);}
+
     public static void do_this_with_text (bool selectedOne = false) {
         string[] history = ClipboardManagerApplet.ClipboardManagerPopover.history;
         string text = get_text(selectedOne);
         var num = 0;
         if (text != null && text.chug().length != 0){
-          if(selectedOne && text.contains(history[0])){
-            ClipboardManagerApplet.ClipboardManagerPopover.remove_index_from_history(0);
-          }
-          if (selectedOne){num = 1;}
-          if( text !=history[0]){
-            ClipboardManagerApplet.ClipboardManagerPopover.addRow(num);
-          }
+            if(selectedOne && text.contains(history[0])){
+                ClipboardManagerApplet.ClipboardManagerPopover.remove_index_from_history(0);
+            }
+            if (selectedOne){
+                num = 1;}
+            if( text !=history[0]){
+                ClipboardManagerApplet.ClipboardManagerPopover.addRow(num);
+            }
         }
     }
 
@@ -66,7 +71,7 @@ using Gtk;
         try {
             string read;
             FileUtils.get_contents (path, out read);
-            return read.split (">?:?<<,LineBreak:)><:?>");
+            return read.split (">?"+":?<<,Line"+"Break:)"+"><:"+"?>");
         } catch (FileError error) {
             string[] welcome = {_("Welcome to Clipboard Manager"), _("Your Clips will be saved Automatically")};
             return welcome;
@@ -75,7 +80,7 @@ using Gtk;
 
     public static void writefile (string path, string[] clips) {
         try {
-            string clipdata = string.joinv(">?:?<<,LineBreak:)><:?>",clips);
+            string clipdata = string.joinv(">?"+":?<<,Line"+"Break:)"+"><:"+"?>",clips);
             FileUtils.set_contents (path, clipdata);
         } catch (FileError error) {
             print("Cannot write to file. Is the directory available?");
