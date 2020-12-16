@@ -39,7 +39,7 @@ These dependencies are required if you want to [Build From Source](#Building-fro
 
 **For Solus**
 ```
-$ sudo eopkg it budgie-desktop-devel vala -c system.devel libnotify
+$ sudo eopkg it budgie-desktop-devel vala -c system.devel libnotify-devel
 ```
 
 **For Debian/ Ubuntu based Distro**
@@ -56,11 +56,11 @@ $ sudo pacman -S budgie-desktop libnotify
 Download the [zip](https://github.com/prateekmedia/budgie-clipboard-applet/archive/main.zip) & then run from the extracted repo's folder:
 
 ```
-$ mkdir build; cd build
+$ mkdir build
 
-$ meson --buildtype plain --prefix=/usr --libdir=/usr/lib
+$ meson --buildtype plain build --prefix=/usr --libdir=/usr/lib
 
-$ sudo ninja install
+$ sudo ninja -C build install
 ```
 **NOTE** : *You can also update the applet by following the above 3 step process*
 
