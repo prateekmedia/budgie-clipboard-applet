@@ -1,6 +1,6 @@
 <p align="center"><a href="#budgie-clipboard-manager"><img src="https://raw.githubusercontent.com/prateekmedia/budgie-clipboard-applet/main/icons/clipmgr.png" height=80px alt="Clipboard manager Logo"/></a></p>
 <h1 align="center">Budgie Clipboard Manager</h1>
-<p align="center"><b>v0.9.81</b></p>
+<p align="center"><b>v0.9.85</b></p>
 
 A clipboard manager applet that can help you to store and manage clipboard content. 
 ***Made with ♥️ for budgie desktop.***
@@ -28,8 +28,9 @@ A clipboard manager applet that can help you to store and manage clipboard conte
 ## Direct Install
 **For Debian/ Ubuntu based Distro**
 ```
-sudo add-apt-repository ppa:ubuntubudgie/backports
-sudo apt install budgie-clipboard-applet
+$ sudo add-apt-repository ppa:ubuntubudgie/backports
+
+$ sudo apt install budgie-clipboard-applet
 ```
 
 
@@ -38,16 +39,16 @@ These dependencies are required if you want to [Build From Source](#Building-fro
 
 **For Solus**
 ```
-$ sudo eopkg it budgie-desktop-devel vala -c system.devel
+$ sudo eopkg it budgie-desktop-devel vala -c system.devel libnotify
 ```
 
 **For Debian/ Ubuntu based Distro**
 ```
-$ sudo apt install budgie-core-dev meson valac
+$ sudo apt install budgie-core-dev meson valac libnotify
 ```
 **For Arch based Distro**
 ```
-$ sudo pacman -S budgie-desktop
+$ sudo pacman -S budgie-desktop libnotify
 ```
 
 
@@ -56,13 +57,9 @@ Download the [zip](https://github.com/prateekmedia/budgie-clipboard-applet/archi
 
 ```
 $ mkdir build; cd build
-```
 
-```
 $ meson --buildtype plain --prefix=/usr --libdir=/usr/lib
-```
 
-```
 $ sudo ninja install
 ```
 **NOTE** : *You can also update the applet by following the above 3 step process*
