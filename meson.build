@@ -1,6 +1,6 @@
 project('com.prateekmedia.clipboardmanager',
         ['vala', 'c'],
-        version: '0.9.81',
+        version: '0.9.85',
         meson_version: '>=0.40.0',
         license: 'GPL3')
 
