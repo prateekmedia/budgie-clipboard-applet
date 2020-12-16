@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/ClipboardManagerApplet.vala:86
+#: src/ClipboardManagerApplet.vala:76
 msgid "Welcome to Clipboard Manager"
 msgstr ""
 
-#: src/ClipboardManagerApplet.vala:86
+#: src/ClipboardManagerApplet.vala:76
 msgid "Your Clips will be saved Automatically"
 msgstr ""
 
@@ -42,7 +42,7 @@ msgstr ""
 msgid "Case Sensitive Search"
 msgstr ""
 
-#: src/ClipboardManagerApplet.vala:179
+#: src/ClipboardManagerApplet.vala:189
 msgid "Save History to File"
 msgstr ""
 
