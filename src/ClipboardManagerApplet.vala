@@ -126,8 +126,18 @@ using Gtk;
     }
   
     public static void send_notification_now(string title, string body, string icon= "clipboard-text-outline-symbolic"){
-        try{
-            Process.spawn_command_line_async(@"notify-send $title '$body' --icon $icon");
+        var notification = new Notify.Notification(title, body, icon);
+        notification.set_app_name("Clipboard Manager");
+        notification.set_urgency(Notify.Urgency.NORMAL);
+        try {
+            new Thread<int>.try("clipboard-notify-thread", () => {
+                try{
+                    notification.show();
+                } catch (Error e) {
+                    error ("Unable to send notification: %s", e.message);
+                }
+                return 0;
+            });
         } catch (Error e) {
             error ("Error: %s", e.message);
         }
@@ -689,6 +699,7 @@ namespace ClipboardManagerApplet {
 		public override bool supports_settings() { return true; }
 		public override Gtk.Widget ? get_settings_ui() { return new ClipboardManagerSettings(settings); }
 		public Applet() {
+			Notify.init("com.prateekmedia.clipboardmanager");
 			/* box */
 			indicatorBox = new Gtk.EventBox();
 			add(indicatorBox);
@@ -725,4 +736,3 @@ public void peas_register_types(TypeModule module) {
 	var objmodule = module as Peas.ObjectModule;
 	objmodule.register_extension_type(typeof(Budgie.Plugin), typeof(ClipboardManagerApplet.Plugin));
 }
-
