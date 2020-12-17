@@ -19,6 +19,7 @@ A clipboard manager applet that can help you to store and manage clipboard conte
 - [x] Automatically save clips to a file so that they are not lost after restart
 - [x] Tooltip in every copied item that let's you distinguish it from others
 - [x] Notification support for copied items from applet
+- [x] Automatically paste any clip you select to the active window
 - [x] Multiple options to configure applet using Budgie desktop Settings
 - [x] Option to restore defaults if you have messed up some of the settings
 
@@ -41,16 +42,16 @@ These dependencies are required if you want to [Build From Source](#Building-fro
 
 **For Solus**
 ```
-$ sudo eopkg it budgie-desktop-devel vala -c system.devel libnotify-devel
+$ sudo eopkg it budgie-desktop-devel vala -c system.devel xdotool
 ```
 
 **For Debian/ Ubuntu based Distro**
 ```
-$ sudo apt install budgie-core-dev meson valac libnotify-dev
+$ sudo apt install budgie-core-dev meson valac xdotool
 ```
 **For Arch based Distro**
 ```
-$ sudo pacman -S budgie-desktop libnotify
+$ sudo pacman -S budgie-desktop xdotool
 ```
 
 

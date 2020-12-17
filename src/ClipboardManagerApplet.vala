@@ -13,7 +13,7 @@ using Gtk;
  public class ClipboardManager : Object {
     private static Gtk.Clipboard monitor_clipboard;
     private static Gtk.Clipboard monitor_clipboard_selection;
-
+	
     public static bool attach_monitor_clipboard() {
         monitor_clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
         monitor_clipboard_selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
@@ -38,12 +38,20 @@ using Gtk;
                  clipboard = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
         }
         return clipboard.wait_for_text ();
-    }
+    }	
 
     public static void set_text (string? item) {
         var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
         if (item != null &&item != clipboard.wait_for_text ()){
                 clipboard.set_text (item, item.length);
+        }
+        if (ClipboardManagerApplet.ClipboardManagerPopover.pasteFromClipboard){
+            try {
+                Process.spawn_command_line_async("xdotool key shift+Insert");
+            }
+            catch (Error e) {
+                warning ("Error: xdotool not installed");
+            }
         }
     }
 
@@ -83,7 +91,7 @@ using Gtk;
             string clipdata = string.joinv(">?"+":?<<,Line"+"Break:)"+"><:"+"?>",clips);
             FileUtils.set_contents (path, clipdata);
         } catch (FileError error) {
-            print("Cannot write to file. Is the directory available?");
+            warning ("Cannot write to file. Is the directory available?");
         }
     }
     
@@ -116,21 +124,16 @@ using Gtk;
     }
   
     public static void send_notification_now(string title, string body, string icon= "clipboard-text-outline-symbolic"){
-        var notification = new Notify.Notification(title, body, icon);
-        notification.set_app_name("Clipboard Manager");
-        notification.set_urgency(Notify.Urgency.NORMAL);
-        try {
-            new Thread<int>.try("clipboard-notify-thread", () => {
-                try{
-                    notification.show();
-                } catch (Error e) {
-                    error ("Unable to send notification: %s", e.message);
-                }
-                return 0;
-            });
-        } catch (Error e) {
-            error ("Error: %s", e.message);
+        GLib.Application application = new GLib.Application ("com.prateekmedia.clipboardmanager", GLib.ApplicationFlags.FLAGS_NONE);
+	    try {	
+	        application.register ();
+	    } catch (Error e) {
+            warning ("Error: %s", e.message);
         }
+        var notification = new Notification(title);
+        notification.set_body(body);
+	    notification.set_priority(NotificationPriority.NORMAL);	
+        application.send_notification("com.prateekmedia.clipboardmanager", notification);
     }
 }
 
@@ -173,8 +176,6 @@ namespace ClipboardManagerApplet {
         copySelTggle.set_halign (Gtk.Align.END);
         copySelTggle.set_hexpand (true);
 
-        
-
         //Case Sensitive Search
         Label caseSenLabel = new Gtk.Label(_("Case Sensitive Search"));
         caseSenLabel.set_halign (Gtk.Align.START);
@@ -183,7 +184,6 @@ namespace ClipboardManagerApplet {
         caseSenTggle.set_active(settings.get_boolean("searchsensitive"));
         caseSenTggle.set_halign (Gtk.Align.END);
         caseSenTggle.set_hexpand (true);
-        
         
         //Save History to Schemas
         Label saveHistLabel = new Gtk.Label(_("Save History to File"));
@@ -194,6 +194,14 @@ namespace ClipboardManagerApplet {
         saveHistTggle.set_halign (Gtk.Align.END);
         saveHistTggle.set_hexpand (true);
         
+        //Save History to Schemas
+        Label pastClipsLabel = new Gtk.Label(_("Paste after Clicking (Requires xdotool)"));
+        pastClipsLabel.set_halign (Gtk.Align.START);
+        pastClipsLabel.set_hexpand (true);
+        Switch pastClipsTggle = new Gtk.Switch();
+        pastClipsTggle.set_active(settings.get_boolean("pastefromclipboard"));
+        pastClipsTggle.set_halign (Gtk.Align.END);
+        pastClipsTggle.set_hexpand (true);
         
         //Clipboard height Label
         Label heightLabel = new Gtk.Label(_("Clipboard Height"));
@@ -219,12 +227,14 @@ namespace ClipboardManagerApplet {
         attach (caseSenTggle,	1, 3, 1, 1);
         attach (saveHistLabel,	0, 4, 1, 1);
         attach (saveHistTggle,	1, 4, 1, 1);
-        attach (heightLabel,	0, 5, 1, 1);
-        attach (heightSpin,		1, 5, 1, 1);
-        attach (resetBtn,		0, 6, 1, 1);
+        attach (pastClipsLabel,	0, 5, 1, 1);
+        attach (pastClipsTggle,	1, 5, 1, 1);
+        attach (heightLabel,	0, 6, 1, 1);
+        attach (heightSpin,		1, 6, 1, 1);
+        attach (resetBtn,		0, 7, 1, 1);
 
-        historySpin.value_changed.connect (()=>{
-            int curr_val = historySpin.get_value_as_int();
+        historySpin.value_changed.connect ((curr)=>{
+            int curr_val = curr.get_value_as_int();
             if(ClipboardManagerPopover.HISTORY_LENGTH != curr_val){
                 settings.set_int("historylength" , curr_val);
                 ClipboardManagerPopover.HISTORY_LENGTH = curr_val;
@@ -232,44 +242,46 @@ namespace ClipboardManagerApplet {
             }
         });
 
-        selClipTggle.state_set.connect (()=>{
-            bool curr_act = selClipTggle.get_active();
+        selClipTggle.state_set.connect ((curr_act)=>{
             settings.set_boolean("selectclip" , curr_act);
             copySelTggle.set_sensitive (curr_act);
             ClipboardManager.attach_monitor_clipboard();
             return false;
         });
 
-        copySelTggle.state_set.connect (()=>{
-            bool curr_act = copySelTggle.get_active();
+        copySelTggle.state_set.connect ((curr_act)=>{
             settings.set_boolean("copyselected" , curr_act);
             ClipboardManagerPopover.copyselected = curr_act;
             return false;
         });
         
-        caseSenTggle.state_set.connect (()=>{
-            bool curr_act = caseSenTggle.get_active();
+        caseSenTggle.state_set.connect ((curr_act)=>{
             settings.set_boolean("searchsensitive" , curr_act);
             ClipboardManagerPopover.searchsensitive = curr_act;
             return false;
         });
         
-        saveHistTggle.state_set.connect (()=>{
-            bool curr_act = saveHistTggle.get_active();
+        saveHistTggle.state_set.connect ((curr_act)=>{
             settings.set_boolean("savehistory" , curr_act);
             ClipboardManagerPopover.savehistory = curr_act;
             return false;
         });
+        
+        pastClipsTggle.state_set.connect ((curr_act)=>{
+            settings.set_boolean("pastefromclipboard" , curr_act);
+            ClipboardManagerPopover.pasteFromClipboard = curr_act;
+            return false;
+        });
          
-        heightSpin.value_changed.connect (()=>{
-            int curr_val = heightSpin.get_value_as_int();
+        heightSpin.value_changed.connect ((curr)=>{
+            int curr_val = curr.get_value_as_int();
             settings.set_int("clipheight", curr_val);
             ClipboardManagerPopover.realContent.set_min_content_height (curr_val);
             ClipboardManagerPopover.show_all_except();
         });
         
         resetBtn.clicked.connect(()=>{
-            string[] toBeReset = {"historylength", "selectclip", "copyselected", "searchsensitive", "savehistory", "clipheight", "privatemode"} ;
+            string[] toBeReset = {"historylength", "selectclip", "copyselected", "searchsensitive", "savehistory", "pastefromclipboard", "clipheight", "privatemode"} ;
         	for (int i=0; i<toBeReset.length; i++){
         	    settings.reset(toBeReset[i]);
         	}
@@ -280,6 +292,7 @@ namespace ClipboardManagerApplet {
 		    copySelTggle.set_sensitive (false);
         	caseSenTggle.set_active(settings.get_boolean("searchsensitive"));
         	saveHistTggle.set_active(settings.get_boolean("savehistory"));
+        	pastClipsTggle.set_active(settings.get_boolean("pastefromclipboard"));
 		    heightSpin.set_value(settings.get_int("clipheight"));
 		    ClipboardManagerPopover.privateModeTggle.set_active(settings.get_boolean("privatemode"));
         });
@@ -322,6 +335,7 @@ namespace ClipboardManagerApplet {
 	public static int HISTORY_LENGTH = settings.get_int("historylength");
 	public static string[] history = {};
 	public static bool savehistory = settings.get_boolean("savehistory");
+	public static bool pasteFromClipboard = settings.get_boolean("pastefromclipboard");
 	public static ListBox listbax = new Gtk.ListBox ();
 	public static bool row_activated_flag = false;
 	public static Switch privateModeTggle = new Gtk.Switch();
@@ -658,6 +672,7 @@ namespace ClipboardManagerApplet {
 	}
 
 	public static void __on_row_activated(int copy){
+		Applet.popover.hide();
 		row_activated_flag = true;
 		string text = history[copy];
 		ClipboardManager.set_text(text);
@@ -675,7 +690,6 @@ namespace ClipboardManagerApplet {
 		if (sendNotifications){
 		    ClipboardManager.send_notification_now(_("Copied")+"!", text);
 		}
-		Applet.popover.hide();
 		specialMark = copy;
 	}
   }
@@ -690,7 +704,6 @@ namespace ClipboardManagerApplet {
 		public override bool supports_settings() { return true; }
 		public override Gtk.Widget ? get_settings_ui() { return new ClipboardManagerSettings(settings); }
 		public Applet() {
-			Notify.init("com.prateekmedia.clipboardmanager");
 			/* box */
 			indicatorBox = new Gtk.EventBox();
 			add(indicatorBox);

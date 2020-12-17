@@ -18,9 +18,14 @@
             <default>false</default>
         </key>
         <key type="b" name="savehistory">
-            <summary>Save history to schemas</summary>
-            <description>Whether to save history to schemas or not.</description>
+            <summary>Save history</summary>
+            <description>Whether to save history to a file or not.</description>
             <default>true</default>
+        </key>
+        <key type="b" name="pastefromclipboard">
+            <summary>Paste after Clicking from Clipboard</summary>
+            <description>Whether to paste after Clicking any clips from Clipboard or not.</description>
+            <default>false</default>
         </key>
         <key type="s" name="custompath">
             <summary>Custom Path where History of the clipboard is stored.</summary>
@@ -41,7 +46,7 @@
         <key type="b" name="notifications">
             <summary>Notify about clipboard</summary>
             <description>If true this will notify about your activity with clipboard manager.</description>
-            <default>true</default>
+            <default>false</default>
         </key>
         <key type="b" name="selectimage">
             <summary>Adds Image to Clipboard (NA)</summary>

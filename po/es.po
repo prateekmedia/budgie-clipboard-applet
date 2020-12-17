@@ -46,6 +46,10 @@ msgstr "Distinguir mayúsculas y minúsculas al buscar"
 msgid "Save History to File"
 msgstr "Guardar historial como un archivo"
 
+#: src/ClipboardManagerApplet.vala:198
+msgid "Paste after Clicking (Requires xdotool)"
+msgstr "Pegar después de hacer clic (requiere xdotool)"
+
 #: src/ClipboardManagerApplet.vala:199
 msgid "Clipboard Height"
 msgstr "Altura del Portapapeles"
