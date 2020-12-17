@@ -10,23 +10,22 @@ A clipboard manager applet that can help you to store and manage clipboard conte
 <p align="center"><img src="https://raw.githubusercontent.com/prateekmedia/budgie-clipboard-applet/main/images/screenshot.png" alt="Screenshot"/></p>
 
 ## FEATURES
-- [x] Automatically save copied / selected text to Clipboard Manager
+- [x] Clipboard history management
 - [x] Save up to 100 Clips
-- [x] Private mode option that let's you copy/select anything without saving it to Clipboard manager
-- [x] Remove icon next to every clip, that let's you remove any clip you  want
-- [x] Search as you type to find the clip that you want
+- [x] Private mode 
+- [x] Remove any clip you  want
+- [x] Searchable history
 - [x] Clear all option
-- [x] Automatically save clips to a file so that they are not lost after restart
-- [x] Tooltip in every copied item that let's you distinguish it from others
-- [x] Notification support for copied items from applet
-- [x] Automatically paste any clip you select to the active window
-- [x] Multiple options to configure applet using Budgie desktop Settings
-- [x] Option to restore defaults if you have messed up some of the settings
+- [x] Autosave History
+- [x] Notification support
+- [x] Customizable Applet
+- [x] Restore Defaults Option
+- [x] Automatically paste selected clip to active window
 
 ## CONTRIBUTION
 -  Pull requests are welcome whether it be [translations](https://github.com/prateekmedia/budgie-clipboard-applet/releases/tag/v0.9.8), adding any useful feature / solving any bugs
 -  You can use `Issues` tab for reporting issues
--  Special thanks to [all the amazing people's](https://github.com/prateekmedia/budgie-clipboard-applet/graphs/contributors) who contributed to this project.
+-  Special thanks to [all these amazing people](https://github.com/prateekmedia/budgie-clipboard-applet/graphs/contributors) who contributed to this project.
 
 ## Direct Install
 **For Debian/ Ubuntu based Distro**
@@ -53,7 +52,7 @@ $ sudo apt install budgie-core-dev meson valac xdotool
 ```
 $ sudo pacman -S budgie-desktop xdotool
 ```
-
+**NOTE** : `xdotool` is optional and is used for pasting text in active window.
 
 ## Building from source
 Download the [zip](https://github.com/prateekmedia/budgie-clipboard-applet/archive/main.zip) & then run from the extracted repo's folder:
@@ -82,6 +81,3 @@ $ sudo ninja -C build uninstall
 ```
 $ budgie-panel --replace &!
 ```
-
-## TODO
-- [ ] Solve [Issues](https://github.com/prateekmedia/budgie-clipboard-applet/issues)
