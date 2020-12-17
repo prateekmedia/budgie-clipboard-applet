@@ -343,6 +343,7 @@ namespace ClipboardManagerApplet {
 		//Get History
 		if (savehistory){
             history = ClipboardManager.get_clipstext(settings, "custompath");
+            remove_index_from_history(-1);
 		}
 
 		/* box */
@@ -582,7 +583,7 @@ namespace ClipboardManagerApplet {
 	public static void remove_index_from_history(int idx){
 	    string[] newArray = {};
         for (int i=0; i<history.length; i++){
-            if (i!=idx){
+            if (i!=idx && history[i].chug().length!=0){
                 newArray += history[i];
         }}
 		history = newArray;
