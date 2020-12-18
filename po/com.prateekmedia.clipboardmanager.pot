@@ -1,20 +1,18 @@
-# Template.
+# Budgie Clipboard Manager.
 # Copyright=© 2020 Prateek SU
 # This file is distributed under the same license as the budgie-clipboard-applet package.
-# CURRENT AUTHOR: Prateek SU, 2020.
-#
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: com.prateekmedia.clipboardmanager\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-11 18:37+0530\n"
+"POT-Creation-Date: 2020-13-11 11:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Prateek SU FullEmail\n"
+"Last-Translator: Your Name <yourname@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"com.prateekmedia.clipboardmanager/<language code like es>/>\n"
+"Language: <language code like es>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: src/ClipboardManagerApplet.vala:76
@@ -93,4 +91,3 @@ msgstr ""
 #: src/ClipboardManagerApplet.vala:675
 msgid "Copied"
 msgstr ""
-
