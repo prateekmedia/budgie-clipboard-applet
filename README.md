@@ -22,11 +22,6 @@ A clipboard manager applet that can help you to store and manage clipboard conte
 - [x] Restore Defaults Option
 - [x] Automatically paste selected clip to active window
 
-## CONTRIBUTION
--  Pull requests are welcome whether it be [translations](https://github.com/prateekmedia/budgie-clipboard-applet/releases/tag/v0.9.8), adding any useful feature / solving any bugs
--  You can use `Issues` tab for reporting issues
--  Special thanks to [all these amazing people](https://github.com/prateekmedia/budgie-clipboard-applet/graphs/contributors) who contributed to this project.
-
 ## Direct Install
 **For Debian/ Ubuntu based Distro**
 ```
@@ -43,7 +38,7 @@ $ sudo apt install budgie-clipboard-applet
 $ yay -S budgie-clipboard-applet
 ```
 
-## Dependencies for Building from source
+## Dependencies
 These dependencies are required if you want to [Build From Source](#Building-from-source)
 
 **For Solus**
@@ -71,7 +66,7 @@ $ sudo ninja -C build install
 ```
 **NOTE** : *You can also update the applet by following the above 2 step process*
 
-## For reinstalling / Uninstalling
+## Other Info
 If you want to reinstall the applet, then run this from the extracted repo's folder:
 
 ```
