@@ -9,6 +9,8 @@ A clipboard manager applet that can help you to store and manage clipboard conte
 
 <p align="center"><img src="https://raw.githubusercontent.com/prateekmedia/budgie-clipboard-applet/main/images/screenshot.png" alt="Screenshot"/></p>
 
+---
+
 ## FEATURES
 - [x] Clipboard history management
 - [x] Save up to 100 Clips
@@ -21,6 +23,8 @@ A clipboard manager applet that can help you to store and manage clipboard conte
 - [x] Customizable Applet
 - [x] Restore Defaults Option
 - [x] Automatically paste selected clip to active window
+
+---
 
 ## Direct Install
 **For Debian/ Ubuntu based Distro**
@@ -37,6 +41,8 @@ $ sudo apt install budgie-clipboard-applet
 ```
 $ yay -S budgie-clipboard-applet
 ```
+
+---
 
 ## Dependencies
 These dependencies are required if you want to [Build From Source](#Building-from-source)
@@ -55,6 +61,8 @@ $ sudo apt install budgie-core-dev meson valac xdotool
 $ sudo pacman -S budgie-desktop xdotool
 ```
 **NOTE** : `xdotool` is optional and is used for pasting text in active window.
+
+---
 
 ## Building from source
 Download the [zip](https://github.com/prateekmedia/budgie-clipboard-applet/archive/main.zip) & then run from the extracted repo's folder:
