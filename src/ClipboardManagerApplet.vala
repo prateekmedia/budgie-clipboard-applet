@@ -79,7 +79,12 @@ using Gtk;
         try {
             string read;
             FileUtils.get_contents (path, out read);
-            return read.split (">?"+":?<<,Line"+"Break:)"+"><:"+"?>");
+            var data = read.split (" : ");
+            string[] newdata = {};
+            for (int i=0; i<data.length; i++){
+                newdata += data[i].replace(":;", ":");
+            }
+            return newdata;
         } catch (FileError error) {
             string[] welcome = {_("Welcome to Clipboard Manager"), _("Your Clips will be saved Automatically")};
             return welcome;
@@ -88,7 +93,11 @@ using Gtk;
 
     public static void writefile (string path, string[] clips) {
         try {
-            string clipdata = string.joinv(">?"+":?<<,Line"+"Break:)"+"><:"+"?>",clips);
+            string[] newclips = {};
+            for (int i=0; i<clips.length; i++){
+                newclips += clips[i].replace(":", ":;");
+            }
+            string clipdata = string.joinv(" : ",newclips);
             FileUtils.set_contents (path, clipdata);
         } catch (FileError error) {
             warning ("Cannot write to file. Is the directory available?");
