@@ -140,9 +140,10 @@ using Gtk;
             warning ("Error: %s", e.message);
         }
         var notification = new Notification(title);
+        notification.set_icon(new ThemedIcon (icon));
         notification.set_body(body);
 	    notification.set_priority(NotificationPriority.NORMAL);	
-        application.send_notification("com.prateekmedia.clipboardmanager", notification);
+        application.send_notification(null, notification);
     }
 }
 
@@ -320,23 +321,20 @@ namespace ClipboardManagerApplet {
 	public static Image indicatorIcon;
 	public static Clipboard clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD);
 	public static GLib.Settings settings = Applet.settings;
-	public static Box mainContent = new Box(Gtk.Orientation.VERTICAL, 4);
+	public static Box mainContent = new Box(Gtk.Orientation.VERTICAL, 0);
 	public static Box search_container = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
 	public static Entry search_box = new Gtk.Entry ();
-	public static ListBox scrbox = new ListBox();
+	public static Box scrbox = new Box(Gtk.Orientation.VERTICAL, 10);
 	public static ScrolledWindow realContent = new Gtk.ScrolledWindow (null,null);
 	public static Box privateMode = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
 	public static bool primode = settings.get_boolean("privatemode");
 	public static Box notifyMe = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
 	public static bool sendNotifications = settings.get_boolean("notifications");
-	public static ListBox setContent = new ListBox();
-	public static Box hBox = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+	public static Box setContent = new Box(Gtk.Orientation.VERTICAL, 8);
+	public static Box hBox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
 	public static Box settingsBox = new Box(Gtk.Orientation.VERTICAL, 8);
-	public static Button pagerCont = new Gtk.Button ();
-	public static Button setDropdown = new Gtk.Button ();
-	public static bool dropCount = false;
-    public static Image goUp = new Gtk.Image.from_icon_name("pan-up-symbolic", Gtk.IconSize.BUTTON);
-    public static Image goDown = new Gtk.Image.from_icon_name("pan-down-symbolic", Gtk.IconSize.BUTTON);
+	public static Label pagerCont = new Gtk.Label ("");
+	public static ToggleButton setDropdown = new Gtk.ToggleButton ();
 	public static string text;
 	public static int clipheight =  settings.get_int("clipheight");
 	public static bool copyselected =  settings.get_boolean("copyselected");
@@ -350,9 +348,6 @@ namespace ClipboardManagerApplet {
 	public static Switch privateModeTggle = new Gtk.Switch();
 	public static int ttyped = 0;
 	public static int specialMark = 0;
-	/* process stuff */
-	/* GUI stuff */
-    /* misc stuff */
 
 	public ClipboardManagerPopover(Gtk.EventBox indicatorBox) {
 		Object(relative_to: indicatorBox);
@@ -372,25 +367,21 @@ namespace ClipboardManagerApplet {
 		/* box */
 		add(mainContent);
 		realContent.set_overlay_scrolling(true);
-		realContent.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.EXTERNAL);
+		realContent.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC);
 		realContent.set_min_content_height (clipheight);
 		scrbox.add(realContent);
 		mainContent.add(search_container);
 		mainContent.add(scrbox);
 		mainContent.add(setContent);   
 
-		hBox.add(pagerCont);
-		hBox.add(setDropdown);
+		hBox.pack_start(pagerCont, true, true, 0);
+		hBox.pack_end(setDropdown, false, false, 0);
 		
-		setDropdown.set_image(goDown);
-		setDropdown.clicked.connect(()=>{
-			dropCount =  !dropCount;
-			show_all_except();
-		});
-        pagerCont.set_hexpand (true);
+		setDropdown.set_image(new Gtk.Image.from_icon_name("pan-down-symbolic", Gtk.IconSize.SMALL_TOOLBAR));
+		setDropdown.toggled.connect(show_all_except);
 
-		setContent.add(hBox);
-		setContent.add(settingsBox);
+		setContent.pack_start (hBox, false, false, 6);
+		setContent.pack_end (settingsBox, false, false, 0);
 		
 		update_pager();
 
@@ -403,7 +394,7 @@ namespace ClipboardManagerApplet {
 		emptyClip.add(emptyClipLabel);
 		settingsBox.add(emptyClip);
 
-		Label privateModeLabel = new Gtk.Label("   " + _("Private Mode"));
+		Label privateModeLabel = new Gtk.Label(_("Private Mode"));
 		privateModeLabel.set_halign (Gtk.Align.START);
 		privateModeLabel.set_hexpand (true);
 		privateModeTggle.set_active(primode);
@@ -425,12 +416,14 @@ namespace ClipboardManagerApplet {
 		});
 
 		privateMode.set_tooltip_text(_("Enabling this will stop Clipboard Manager to save any Clips"));
+		privateMode.add(addHSpacer());
 		privateMode.add(privateModeLabel);
 		privateMode.add(privateModeTggle);
+		privateMode.add(addHSpacer());
 		settingsBox.add(privateMode);
 		
 		
-		Label notifyMeLabel = new Gtk.Label("   " + _("Notifications"));
+		Label notifyMeLabel = new Gtk.Label(_("Notifications"));
 		notifyMeLabel.set_halign (Gtk.Align.START);
 		notifyMeLabel.set_hexpand (true);
 		Switch notifyMeTggle = new Gtk.Switch();
@@ -446,8 +439,10 @@ namespace ClipboardManagerApplet {
 		});
 
 		notifyMe.set_tooltip_text(_("Enabling this will Notify you about every clips you copy"));
+		notifyMe.add(addHSpacer());
 		notifyMe.add(notifyMeLabel);
 		notifyMe.add(notifyMeTggle);
+		notifyMe.add(addHSpacer());
 		settingsBox.add(notifyMe);
 
 		search_box.set_placeholder_text(_("Search Clipboard History")+"…");
@@ -466,6 +461,10 @@ namespace ClipboardManagerApplet {
 			}
 		});
 		search_container.add(search_box);
+    }
+
+    public static Gtk.Label addHSpacer() {
+        return new Gtk.Label("     ");
     }
 
 	public static void addRow(int ttype){
@@ -633,20 +632,14 @@ namespace ClipboardManagerApplet {
 	
 	public static void show_all_except(){
 		Applet.popover.get_child().show_all();
-		if (dropCount) {
+		if (setDropdown.get_active())
 			settingsBox.show();
-			setDropdown.set_image(goUp);
-		}
-		else { 
+		else
 			settingsBox.hide();
-			setDropdown.set_image(goDown);
-		}
 	}
 
 	public static void update_pager(){
-		pagerCont.set_label(@"$(history.length)/$HISTORY_LENGTH");
-        pagerCont.set_hexpand (true);
-		pagerCont.set_sensitive (false);
+		pagerCont.set_label(@"$(history.length) / $HISTORY_LENGTH");
 	}
 
 	public static void clip_curr_empty(string emptyText = "No Clipboard Items Found"){
@@ -655,10 +648,7 @@ namespace ClipboardManagerApplet {
 	        indicatorIcon.set_from_icon_name("clipboard-outline-symbolic", Gtk.IconSize.MENU);
 	    }
 	    Label clipLabel = new Label(text);
-	    Button clipButton = new Button();
-	    clipButton.add(clipLabel);
-	    clipButton.set_sensitive (false);
-	    listbax.add(clipButton);
+	    listbax.add(clipLabel);
 	}
 	
 	public static void on_search_activate (Gtk.Entry entry) {
