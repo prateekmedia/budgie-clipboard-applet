@@ -140,7 +140,8 @@ using Gtk;
             warning ("Error: %s", e.message);
         }
         var notification = new Notification(title);
-        notification.set_icon(new ThemedIcon (icon));
+        var file = GLib.File.new_for_path("/usr/share/pixmaps/clipboard-text-outline-symbolic.svg");
+        notification.set_icon(new GLib.FileIcon(file));
         notification.set_body(body);
 	    notification.set_priority(NotificationPriority.NORMAL);	
         application.send_notification(null, notification);
