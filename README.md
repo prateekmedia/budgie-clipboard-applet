@@ -37,7 +37,7 @@ $ sudo apt install budgie-clipboard-applet
 **NOTE** : If you are using Ubuntu Budgie then you can directly install the applet from welcome screen.
 
 
-**For Arch based Distro (Coming soon)**
+**For Arch based Distro (using AUR)**
 ```
 $ yay -S budgie-clipboard-applet
 ```
