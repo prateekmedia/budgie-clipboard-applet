@@ -1,0 +1,93 @@
+# Budgie Clipboard Manager.
+# Copyright=© 2020 Prateek SU
+# This file is distributed under the same license as the budgie-clipboard-applet package.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-13-11 11:22+0000\n"
+"PO-Revision-Date: 2021-06-28 17:22+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2.1\n"
+"Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: nl\n"
+
+#: src/ClipboardManagerApplet.vala:76
+msgid "Welcome to Clipboard Manager"
+msgstr "Welkom bij Klembordbeheer"
+
+#: src/ClipboardManagerApplet.vala:76
+msgid "Your Clips will be saved Automatically"
+msgstr "Je klemborditems worden automatisch opgeslagen"
+
+#: src/ClipboardManagerApplet.vala:146
+msgid "History Size"
+msgstr "Geschiedenisomvang"
+
+#: src/ClipboardManagerApplet.vala:155
+msgid "Get Selection to Clipboard"
+msgstr "Selectie toevoegen aan klembord"
+
+#: src/ClipboardManagerApplet.vala:164
+msgid "Copy Selection to Clipboard"
+msgstr "Selectie kopiëren naar klembord"
+
+#: src/ClipboardManagerApplet.vala:179
+msgid "Case Sensitive Search"
+msgstr "Hoofdlettergevoelig zoeken"
+
+#: src/ClipboardManagerApplet.vala:189
+msgid "Save History to File"
+msgstr "Geschiedenis bewaren in bestand"
+
+#: src/ClipboardManagerApplet.vala:198
+msgid "Paste after Clicking (Requires xdotool)"
+msgstr "Plakken na klikken (xdotool vereist)"
+
+#: src/ClipboardManagerApplet.vala:199
+msgid "Clipboard Height"
+msgstr "Klembordhoogte"
+
+#: src/ClipboardManagerApplet.vala:208
+msgid "Restore Defaults"
+msgstr "Standaardwaarden"
+
+#: src/ClipboardManagerApplet.vala:373
+msgid "Clear All"
+msgstr "Alles wissen"
+
+#: src/ClipboardManagerApplet.vala:382
+msgid "Private Mode"
+msgstr "Privémodus"
+
+#: src/ClipboardManagerApplet.vala:403
+msgid "Enabling this will stop Clipboard Manager to save any Clips"
+msgstr "Schakel in om geen items meer op te slaan op het klembord"
+
+#: src/ClipboardManagerApplet.vala:409
+msgid "Notifications"
+msgstr "Meldingen"
+
+#: src/ClipboardManagerApplet.vala:424
+msgid "Enabling this will Notify you about every clips you copy"
+msgstr "Schakel in om na het kopiëren een melding te tonen"
+
+#: src/ClipboardManagerApplet.vala:429
+msgid "Search Clipboard History"
+msgstr "Klembordgeschiedenis doorzoeken"
+
+#: src/ClipboardManagerApplet.vala:629
+msgid "No Clipboard Items Found"
+msgstr "Geen klemborditems gevonden"
+
+#: src/ClipboardManagerApplet.vala:629
+msgid "Try changing search terms"
+msgstr "Probeer een andere zoekopdracht"
+
+#: src/ClipboardManagerApplet.vala:675
+msgid "Copied"
+msgstr "Gekopieerd"
